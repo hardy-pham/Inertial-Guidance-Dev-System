@@ -83,3 +83,5 @@ class LSM6DS3(object):
 
 test = LSM6DS3()
 test.begin()
+
+#test
