@@ -6,7 +6,7 @@ from LSM6DS3_Registers import *
 bus = smbus.SMBus(1)
 address = 0x6a
 
-
+# TODO: Format properly
 class LSM6DS3(object):
     """
     Initialization
@@ -15,7 +15,7 @@ class LSM6DS3(object):
     """
 
     def __init__(self):
-        self.address = 0x6a # can be 0x6a or 0x6b --> 0x6a seems to be more stable as of now
+        self.address = 0x6a  # can be 0x6a or 0x6b --> 0x6a seems to be more stable as of now
         self.gyroEnabled = 1  # can be 0 or 1
         self.gyroRange = 2000  # Max deg/s. Can be: 125, 245, 500, 1000, 2000
         self.gyroSampleRate = 416  # Hz. Can be: 13, 26, 52, 104, 208, 416, 833, 1666
@@ -48,43 +48,47 @@ class LSM6DS3(object):
     """
 
     def begin(self):
+
         """
-        Setup basic accelerometer settings
+        Setup accelerometer settings
         """
+        dataToWrite = 0
 
-        # filter bandwidth
-        accelBandWidthDict = {
-            50: LSM6DS3_ACC_GYRO_BW_XL_50Hz,
-            100: LSM6DS3_ACC_GYRO_BW_XL_100Hz,
-            200: LSM6DS3_ACC_GYRO_BW_XL_200Hz,
-            400: LSM6DS3_ACC_GYRO_BW_XL_50Hz
-        }
+        if (self.accelEnabled == 1):
+            # filter bandwidth
+            accelBandWidthDict = {
+                50: LSM6DS3_ACC_GYRO_BW_XL_50Hz,
+                100: LSM6DS3_ACC_GYRO_BW_XL_100Hz,
+                200: LSM6DS3_ACC_GYRO_BW_XL_200Hz,
+                400: LSM6DS3_ACC_GYRO_BW_XL_50Hz
+            }
 
-        # full scale
-        accelRangeDict = {
-            2: LSM6DS3_ACC_GYRO_FS_XL_2g,
-            4: LSM6DS3_ACC_GYRO_FS_XL_4g,
-            8: LSM6DS3_ACC_GYRO_FS_XL_8g,
-            16: LSM6DS3_ACC_GYRO_FS_XL_16g
-        }
+            # full scale
+            accelRangeDict = {
+                2: LSM6DS3_ACC_GYRO_FS_XL_2g,
+                4: LSM6DS3_ACC_GYRO_FS_XL_4g,
+                8: LSM6DS3_ACC_GYRO_FS_XL_8g,
+                16: LSM6DS3_ACC_GYRO_FS_XL_16g
+            }
 
-        # accelerometer ODR
-        accelSampleRateDict = {
-            13: LSM6DS3_ACC_GYRO_ODR_XL_13Hz,
-            26: LSM6DS3_ACC_GYRO_ODR_XL_26Hz,
-            52: LSM6DS3_ACC_GYRO_ODR_XL_52Hz,
-            104: LSM6DS3_ACC_GYRO_ODR_XL_104Hz,
-            208: LSM6DS3_ACC_GYRO_ODR_XL_208Hz,
-            416: LSM6DS3_ACC_GYRO_ODR_XL_416Hz,
-            833: LSM6DS3_ACC_GYRO_ODR_XL_833Hz,
-            1660: LSM6DS3_ACC_GYRO_ODR_XL_1660Hz,
-            3330: LSM6DS3_ACC_GYRO_ODR_XL_3330Hz,
-            6660: LSM6DS3_ACC_GYRO_ODR_XL_6660Hz,
-            13330: LSM6DS3_ACC_GYRO_ODR_XL_13330Hz
-        }
+            # accelerometer ODR
+            accelSampleRateDict = {
+                13: LSM6DS3_ACC_GYRO_ODR_XL_13Hz,
+                26: LSM6DS3_ACC_GYRO_ODR_XL_26Hz,
+                52: LSM6DS3_ACC_GYRO_ODR_XL_52Hz,
+                104: LSM6DS3_ACC_GYRO_ODR_XL_104Hz,
+                208: LSM6DS3_ACC_GYRO_ODR_XL_208Hz,
+                416: LSM6DS3_ACC_GYRO_ODR_XL_416Hz,
+                833: LSM6DS3_ACC_GYRO_ODR_XL_833Hz,
+                1660: LSM6DS3_ACC_GYRO_ODR_XL_1660Hz,
+                3330: LSM6DS3_ACC_GYRO_ODR_XL_3330Hz,
+                6660: LSM6DS3_ACC_GYRO_ODR_XL_6660Hz,
+                13330: LSM6DS3_ACC_GYRO_ODR_XL_13330Hz
+            }
 
-        dataToWrite = accelBandWidthDict[self.accelBandwidth] + accelRangeDict[self.accelRange] + accelSampleRateDict[
-            self.accelSampleRate]
+            dataToWrite += accelBandWidthDict[self.accelBandwidth] + accelRangeDict[self.accelRange] + \
+                           accelSampleRateDict[
+                               self.accelSampleRate]
 
         # data sent to register
         print("{0:b}".format(dataToWrite))
@@ -96,19 +100,69 @@ class LSM6DS3(object):
         bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL4_C, dataToWrite)
 
         """
-        Setup basic gyroscope settings
+        Setup gyroscope settings
         """
+        dataToWrite = 0
 
-    def testAccelerometer(self):
+        if (self.gyroEnabled == 1):
+            gyroRangeDict = {
+                125: LSM6DS3_ACC_GYRO_FS_125_ENABLED,
+                245: LSM6DS3_ACC_GYRO_FS_G_245dps,
+                500: LSM6DS3_ACC_GYRO_FS_G_500dps,
+                1000: LSM6DS3_ACC_GYRO_FS_G_1000dps,
+                2000: LSM6DS3_ACC_GYRO_FS_G_2000dps
+            }
+
+            gyroSampleRateDict = {
+                13: LSM6DS3_ACC_GYRO_ODR_G_13Hz,
+                26: LSM6DS3_ACC_GYRO_ODR_G_26Hz,
+                52: LSM6DS3_ACC_GYRO_ODR_G_52Hz,
+                104: LSM6DS3_ACC_GYRO_ODR_G_104Hz,
+                208: LSM6DS3_ACC_GYRO_ODR_G_208Hz,
+                416: LSM6DS3_ACC_GYRO_ODR_G_416Hz,
+                833: LSM6DS3_ACC_GYRO_ODR_G_833Hz,
+                1660: LSM6DS3_ACC_GYRO_ODR_G_1660Hz,
+            }
+
+            dataToWrite += gyroRangeDict[self.gyroRange] + gyroSampleRateDict[self.gyroSampleRate]
+
+        bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL2_G, dataToWrite)
+
+    """
+    readAccelX / readAccelY / readAccelZ / readAccelXYZ
+
+    returns the acceleration value for the given axis
+    """
+    def readAccelX(self):
 
         # connection between 0x6a and 0x6b is unstable. If 0x6a disconnects, use 0x6b
         # LSM6DS3_ACC_GYRO_OUTX_L_XL prints the X-axis output
         # output value is expressed as 16bit word in two's complement
-        while(True):
-            try:
-                print(self.calcAccel( bus.read_byte_data(self.address, LSM6DS3_ACC_GYRO_OUTX_L_XL )))
-            except IOError:
-                print(bus.read_byte_data(0x6b, LSM6DS3_ACC_GYRO_OUTX_L_XL))
+
+        try:
+            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_XL)))
+        except IOError:
+            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_XL)))
+
+    def readAccelY(self):
+
+        try:
+            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_XL)))
+        except IOError:
+            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_XL)))
+
+    def readAccelZ(self):
+        try:
+            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_XL)))
+        except IOError:
+            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_XL)))
+
+    def readAccelXYZ(self):
+        while (True):
+            X = self.readAccelX()
+            Y = self.readAccelY()
+            Z = self.readAccelZ()
+            print("X: " + str(X) + "Y: " + str(Y) + "Z: " + str(Z))
 
     """
     calcAccel
@@ -116,9 +170,73 @@ class LSM6DS3(object):
     takes in a 16 bit word in two's complement and returns the X-axis linear acceleration value
     """
     def calcAccel(self, input):
-        output = input * 0.0061 * ( self.accelRange >> 1 ) / 1000
+        output = input * 0.0061 * (self.accelRange >> 1) / 1000
         return output
+
+    """
+    readGyroX / readGyroY / readGyroZ / readGyroXYZ
+
+    returns the register value for the given axis
+    """
+    def readGyroX(self):
+
+        try:
+            return (self.calcGyro(self.readRegisterInt16(self.address, LSM6DS3_ACC_GYRO_OUTX_L_G)))
+        except IOError:
+            return (self.calcGyro(self.readRegisterInt16(0x6b, LSM6DS3_ACC_GYRO_OUTX_L_G)))
+
+    def readGyroY(self):
+
+        try:
+            return (self.calcGyro(self.readRegisterInt16(self.address, LSM6DS3_ACC_GYRO_OUTY_L_G)))
+        except IOError:
+            return (self.calcGyro(self.readRegisterInt16(0x6b, LSM6DS3_ACC_GYRO_OUTY_L_G)))
+
+    def readGyroZ(self):
+        try:
+            return (self.calcGyro(self.readRegisterInt16(self.address, LSM6DS3_ACC_GYRO_OUTZ_L_G)))
+        except IOError:
+            return (self.calcGyro(self.readRegisterInt16(0x6b, LSM6DS3_ACC_GYRO_OUTZ_L_G)))
+
+    def readGyroXYZ(self):
+        while (True):
+            X = self.readGyroX()
+            Y = self.readGyroY()
+            Z = self.readGyroZ()
+            print("X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
+
+    """
+    calcGyro
+
+    Calculates the angular rate
+    """
+    def calcGyro(self, input):
+        gyroRangeDivisor = self.gyroRange / 125
+        if (self.gyroRange == 245):
+            gyroRangeDivisor = 2
+
+        output = input * 4.375 * gyroRangeDivisor / 1000
+        return output
+
+    """
+    readRegisterInt16
+
+    Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
+    """
+    def readRegisterInt16(self, register):
+        try:
+            bytes = bus.read_i2c_block_data(self.address, register, 2)
+        except IOError:
+            bytes = bus.read_i2c_block_data(0x6b, register, 2)
+
+        output = bytes[0] | (bytes[1] << 8)
+
+        if (output & (1 << 16 - 1)):
+            output = output - (1 << 16)
+
+        return output
+
 
 test = LSM6DS3()
 test.begin()
-test.testAccelerometer()
+test.readGyroXYZ()
