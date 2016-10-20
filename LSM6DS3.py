@@ -182,10 +182,9 @@ class LSM6DS3(object):
 
     def readGyroX(self):
 
-        try:
-            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)))
-        except IOError:
-            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)))
+        readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)
+        calculatedRate = self.calcGyro(readValue)
+        return calculatedRate
 
     """
     readGyroY
@@ -195,10 +194,9 @@ class LSM6DS3(object):
 
     def readGyroY(self):
 
-        try:
-            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)))
-        except IOError:
-            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)))
+        readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)
+        calculatedRate = self.calcGyro(readValue)
+        return calculatedRate
 
     """
     readGyroZ
@@ -207,10 +205,10 @@ class LSM6DS3(object):
     """
 
     def readGyroZ(self):
-        try:
-            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)))
-        except IOError:
-            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)))
+
+        readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)
+        calculatedRate = self.calcGyro(readValue)
+        return calculatedRate
 
     """
     readGyroXYZ
@@ -218,7 +216,7 @@ class LSM6DS3(object):
     prints the angular rate of all axes
     """
 
-    def readGyroXYZ(self):
+    def printGyroXYZ(self):
         initialCounter = 0
         while (True):
             if (initialCounter == 0):
@@ -256,6 +254,9 @@ class LSM6DS3(object):
     readRegisterInt16
 
     Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
+
+    Input: register / the register to read blocks of 8 bits from
+    Output: converted binary value of the 2s complement word
     """
 
     def readRegisterInt16(self, register):
