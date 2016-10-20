@@ -6,6 +6,7 @@ from LSM6DS3_Registers import *
 bus = smbus.SMBus(1)
 address = 0x6a
 
+
 # TODO: Format properly
 class LSM6DS3(object):
     """
@@ -133,6 +134,7 @@ class LSM6DS3(object):
 
     returns the acceleration value for the given axis
     """
+
     def readAccelX(self):
 
         # connection between 0x6a and 0x6b is unstable. If 0x6a disconnects, use 0x6b
@@ -169,6 +171,7 @@ class LSM6DS3(object):
 
     takes in a 16 bit word in two's complement and returns the X-axis linear acceleration value
     """
+
     def calcAccel(self, input):
         output = input * 0.0061 * (self.accelRange >> 1) / 1000
         return output
@@ -178,31 +181,45 @@ class LSM6DS3(object):
 
     returns the register value for the given axis
     """
+
     def readGyroX(self):
 
         try:
-            return (self.calcGyro(self.readRegisterInt16(self.address, LSM6DS3_ACC_GYRO_OUTX_L_G)))
+            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)))
         except IOError:
-            return (self.calcGyro(self.readRegisterInt16(0x6b, LSM6DS3_ACC_GYRO_OUTX_L_G)))
+            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)))
 
     def readGyroY(self):
 
         try:
-            return (self.calcGyro(self.readRegisterInt16(self.address, LSM6DS3_ACC_GYRO_OUTY_L_G)))
+            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)))
         except IOError:
-            return (self.calcGyro(self.readRegisterInt16(0x6b, LSM6DS3_ACC_GYRO_OUTY_L_G)))
+            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)))
 
     def readGyroZ(self):
         try:
-            return (self.calcGyro(self.readRegisterInt16(self.address, LSM6DS3_ACC_GYRO_OUTZ_L_G)))
+            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)))
         except IOError:
-            return (self.calcGyro(self.readRegisterInt16(0x6b, LSM6DS3_ACC_GYRO_OUTZ_L_G)))
+            return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)))
 
     def readGyroXYZ(self):
+        initialCounter = 0
         while (True):
-            X = self.readGyroX()
-            Y = self.readGyroY()
-            Z = self.readGyroZ()
+            if(initialCounter == 0):
+                X = self.readGyroX()
+                Y = self.readGyroY()
+                Z = self.readGyroZ()
+
+                xDifference = 0 - X
+                yDifference = 0 - Y
+                zDifference = 0 - Z
+
+                initialCounter = 1
+
+            X = round(self.readGyroX() + xDifference, 0)
+            Y = round(self.readGyroY() + yDifference, 0)
+            Z = round(self.readGyroZ() + zDifference, 0)
+
             print("X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
 
     """
@@ -210,6 +227,7 @@ class LSM6DS3(object):
 
     Calculates the angular rate
     """
+
     def calcGyro(self, input):
         gyroRangeDivisor = self.gyroRange / 125
         if (self.gyroRange == 245):
@@ -223,6 +241,7 @@ class LSM6DS3(object):
 
     Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
     """
+
     def readRegisterInt16(self, register):
         try:
             bytes = bus.read_i2c_block_data(self.address, register, 2)
@@ -239,4 +258,4 @@ class LSM6DS3(object):
 
 test = LSM6DS3()
 test.begin()
-test.readGyroXYZ()
+test.readAccelXYZ()
