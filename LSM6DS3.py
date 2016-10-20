@@ -211,14 +211,32 @@ class LSM6DS3(object):
         return calculatedRate
 
     """
-    readGyroXYZ
+    calcGyro
+
+    Calculates the angular rate
+    """
+
+    def calcGyro(self, input):
+        gyroRangeDivisor = self.gyroRange / 125
+        if (self.gyroRange == 245):
+            gyroRangeDivisor = 2
+
+        output = input * 4.375 * gyroRangeDivisor / 1000
+        return output
+
+    """
+    printGyroXYZ
 
     prints the angular rate of all axes
     """
 
     def printGyroXYZ(self):
+
         initialCounter = 0
+
         while (True):
+
+            # initial calibration
             if (initialCounter == 0):
                 X = self.readGyroX()
                 Y = self.readGyroY()
@@ -235,20 +253,6 @@ class LSM6DS3(object):
             Z = round(self.readGyroZ() + zDifference, 0)
 
             print("X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
-
-    """
-    calcGyro
-
-    Calculates the angular rate
-    """
-
-    def calcGyro(self, input):
-        gyroRangeDivisor = self.gyroRange / 125
-        if (self.gyroRange == 245):
-            gyroRangeDivisor = 2
-
-        output = input * 4.375 * gyroRangeDivisor / 1000
-        return output
 
     """
     readRegisterInt16
@@ -273,7 +277,6 @@ class LSM6DS3(object):
             output = output - (1 << 16)
 
         return output
-
 
 test = LSM6DS3()
 test.begin()
