@@ -91,8 +91,6 @@ class LSM6DS3(object):
                            accelSampleRateDict[
                                self.accelSampleRate]
 
-        # data sent to register
-        print("{0:b}".format(dataToWrite))
         # setup control register 1
         bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL1_XL, dataToWrite)
 
@@ -177,9 +175,9 @@ class LSM6DS3(object):
         return output
 
     """
-    readGyroX / readGyroY / readGyroZ / readGyroXYZ
+    readGyroX
 
-    returns the register value for the given axis
+    returns the angular rate of the x-axis
     """
 
     def readGyroX(self):
@@ -189,6 +187,12 @@ class LSM6DS3(object):
         except IOError:
             return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)))
 
+    """
+    readGyroY
+
+    returns the angular rate of the y-axis
+    """
+
     def readGyroY(self):
 
         try:
@@ -196,16 +200,28 @@ class LSM6DS3(object):
         except IOError:
             return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)))
 
+    """
+    readGyroZ
+
+    returns the angular rate of the z-axis
+    """
+
     def readGyroZ(self):
         try:
             return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)))
         except IOError:
             return (self.calcGyro(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)))
 
+    """
+    readGyroXYZ
+
+    prints the angular rate of all axes
+    """
+
     def readGyroXYZ(self):
         initialCounter = 0
         while (True):
-            if(initialCounter == 0):
+            if (initialCounter == 0):
                 X = self.readGyroX()
                 Y = self.readGyroY()
                 Z = self.readGyroZ()
@@ -248,8 +264,10 @@ class LSM6DS3(object):
         except IOError:
             bytes = bus.read_i2c_block_data(0x6b, register, 2)
 
+        # turn read 8 bit register blocks into 16 bit 2s complement word
         output = bytes[0] | (bytes[1] << 8)
 
+        # convert 16 bit 2s complement to int
         if (output & (1 << 16 - 1)):
             output = output - (1 << 16)
 
