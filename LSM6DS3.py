@@ -15,6 +15,7 @@ class LSM6DS3(object):
     """
 
     def __init__(self):
+        self.address = 0x6a # can be 0x6a or 0x6b --> 0x6a seems to be more stable as of now
         self.gyroEnabled = 1  # can be 0 or 1
         self.gyroRange = 2000  # Max deg/s. Can be: 125, 245, 500, 1000, 2000
         self.gyroSampleRate = 416  # Hz. Can be: 13, 26, 52, 104, 208, 416, 833, 1666
@@ -98,7 +99,26 @@ class LSM6DS3(object):
         Setup basic gyroscope settings
         """
 
+    def testAccelerometer(self):
 
+        # connection between 0x6a and 0x6b is unstable. If 0x6a disconnects, use 0x6b
+        # LSM6DS3_ACC_GYRO_OUTX_L_XL prints the X-axis output
+        # output value is expressed as 16bit word in two's complement
+        while(True):
+            try:
+                print(self.calcAccel( bus.read_byte_data(self.address, LSM6DS3_ACC_GYRO_OUTX_L_XL )))
+            except IOError:
+                print(bus.read_byte_data(0x6b, LSM6DS3_ACC_GYRO_OUTX_L_XL))
+
+    """
+    calcAccel
+
+    takes in a 16 bit word in two's complement and returns the X-axis linear acceleration value
+    """
+    def calcAccel(self, input):
+        output = input * 0.0061 * ( self.accelRange >> 1 ) / 1000
+        return output
 
 test = LSM6DS3()
 test.begin()
+test.testAccelerometer()
