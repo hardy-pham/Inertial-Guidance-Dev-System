@@ -10,9 +10,9 @@ address = 0x6a
 # TODO: Format properly
 class LSM6DS3(object):
     """
-    Initialization
+    __init__
 
-    Initialize basic settings that will be inputted into the control registers to set up accelerometer and gyroscope
+    Initialize setting variables that will be inputted into the control registers to set up accelerometer and gyroscope
     """
 
     def __init__(self):
@@ -43,16 +43,16 @@ class LSM6DS3(object):
         self.fifoModeWord = 0  # default off
 
     """
-    Configuration
+    begin
+    configures basic settings for accelerometer and gyroscope
 
-    Uses the stored settings to start the IMU (Inertial Measurement Unit)
+    @param none
+    @return none
     """
 
     def begin(self):
 
-        """
-        Setup accelerometer settings
-        """
+        # setup accelerometer settings
         dataToWrite = 0
 
         if (self.accelEnabled == 1):
@@ -98,9 +98,7 @@ class LSM6DS3(object):
         dataToWrite = LSM6DS3_ACC_GYRO_BW_SCAL_ODR_ENABLED
         bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL4_C, dataToWrite)
 
-        """
-        Setup gyroscope settings
-        """
+        # setup gyroscope settings
         dataToWrite = 0
 
         if (self.gyroEnabled == 1):
@@ -128,9 +126,11 @@ class LSM6DS3(object):
         bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL2_G, dataToWrite)
 
     """
-    readAccelX / readAccelY / readAccelZ / readAccelXYZ
+    readAccelX
+    retrieves raw acceleration and returns the calculated acceleration
 
-    returns the acceleration value for the given axis
+    @param none
+    @return calcAccelX /calculated x-axis acceleration
     """
 
     def readAccelX(self):
@@ -139,25 +139,64 @@ class LSM6DS3(object):
         # LSM6DS3_ACC_GYRO_OUTX_L_XL prints the X-axis output
         # output value is expressed as 16bit word in two's complement
 
-        try:
-            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_XL)))
-        except IOError:
-            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_XL)))
+        rawAccelX = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_XL)
+        calcAccelX = self.calcAccel(rawAccelX)
+
+        return calcAccelX
+
+    """
+    readAccelY
+    retrieves raw acceleration and returns the calculated acceleration
+
+    @param none
+    @return calcAccelY /calculated y-axis acceleration
+    """
 
     def readAccelY(self):
 
-        try:
-            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_XL)))
-        except IOError:
-            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_XL)))
+        rawAccelY = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_XL)
+        calcAccelY = self.calcAccel(rawAccelY)
+
+        return calcAccelY
+
+    """
+    readAccelZ
+    retrieves raw acceleration and returns the calculated acceleration
+
+    @param none
+    @return calcAccelZ /calculated z-axis acceleration
+    """
 
     def readAccelZ(self):
-        try:
-            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_XL)))
-        except IOError:
-            return (self.calcAccel(self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_XL)))
 
-    def readAccelXYZ(self):
+        rawAccelZ = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_XL)
+        calcAccelZ = self.calcAccel(rawAccelZ)
+
+        return calcAccelZ
+
+    """
+    calcAccel
+    converts the raw acceleration value from m/(s^2) to mg
+
+    @param rawAccel /the raw acceleration value obtained from the output register
+    @return calculatedAccel /the converted acceleration value
+    """
+
+    def calcAccel(self, rawAccel):
+        g = 9.80665
+        calculatedAccel = float(rawAccel) * (1 / g) * (1 / 2) * (
+            self.accelRange >> 1) / 1000  # accel range is =/- 2 4 8 16g
+        return calculatedAccel
+
+    """
+    printAccelXYZ
+    prints the acceleration force in all three axes (x, y, and z)
+
+    @param none
+    @return none
+    """
+
+    def printAccelXYZ(self):
         while (True):
             X = self.readAccelX()
             Y = self.readAccelY()
@@ -165,54 +204,37 @@ class LSM6DS3(object):
             print("X: " + str(X) + "Y: " + str(Y) + "Z: " + str(Z))
 
     """
-    calcAccel
-
-    takes in a 16 bit word in two's complement and returns the X-axis linear acceleration value
-    """
-
-    def calcAccel(self, input):
-        output = input * 0.0061 * (self.accelRange >> 1) / 1000
-        return output
-
-    """
     readGyroX
-
     returns the angular rate of the x-axis
     """
 
     def readGyroX(self):
-
         readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)
         calculatedRate = self.calcGyro(readValue)
         return calculatedRate
 
     """
     readGyroY
-
     returns the angular rate of the y-axis
     """
 
     def readGyroY(self):
-
         readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)
         calculatedRate = self.calcGyro(readValue)
         return calculatedRate
 
     """
     readGyroZ
-
     returns the angular rate of the z-axis
     """
 
     def readGyroZ(self):
-
         readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)
         calculatedRate = self.calcGyro(readValue)
         return calculatedRate
 
     """
     calcGyro
-
     Calculates the angular rate
     """
 
@@ -226,17 +248,16 @@ class LSM6DS3(object):
 
     """
     printGyroXYZ
-
     prints the angular rate of all axes
     """
 
     def printGyroXYZ(self):
-
         initialCounter = 0
 
         while (True):
 
             # initial calibration
+            # TODO: move calibration out of while loop
             if (initialCounter == 0):
                 X = self.readGyroX()
                 Y = self.readGyroY()
@@ -256,11 +277,10 @@ class LSM6DS3(object):
 
     """
     readRegisterInt16
-
     Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
 
-    Input: register / the register to read blocks of 8 bits from
-    Output: converted binary value of the 2s complement word
+    @param register /the register to read blocks of 8 bits from
+    @return output /converted binary value of the 2s complement word
     """
 
     def readRegisterInt16(self, register):
@@ -278,6 +298,7 @@ class LSM6DS3(object):
 
         return output
 
+
 test = LSM6DS3()
 test.begin()
-test.readAccelXYZ()
+test.printAccelXYZ()
