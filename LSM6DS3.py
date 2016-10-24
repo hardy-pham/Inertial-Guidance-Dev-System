@@ -1,21 +1,18 @@
 import smbus
 from LSM6DS3_Registers import *
 
-# initialize i2c connection through smbus
+# initialize i2c connection using smbus module
 # TODO: fix to be OOP
 bus = smbus.SMBus(1)
 address = 0x6b
 
-
-# TODO: Format properly
 class LSM6DS3(object):
-    """
-    __init__
-
-    Initialize setting variables that will be inputted into the control registers to set up accelerometer and gyroscope
-    """
 
     def __init__(self):
+        """
+        Initialize setting variables that will be inputted into the control registers to set up accelerometer and gyroscope
+        """
+
         self.address = 0x6b  # can be 0x6a or 0x6b --> 0x6a seems to be more stable as of now
         self.gyroEnabled = 1  # can be 0 or 1
         self.gyroRange = 2000  # Max deg/s. Can be: 125, 245, 500, 1000, 2000
@@ -42,15 +39,13 @@ class LSM6DS3(object):
         self.fifoSampleRate = 10  # default 1-Hz
         self.fifoModeWord = 0  # default off
 
-    """
-    begin
-    configures basic settings for accelerometer and gyroscope
-
-    @param none
-    @return none
-    """
-
     def begin(self):
+        """
+        configures basic settings for accelerometer and gyroscope
+
+        @param none
+        @return none
+        """
 
         # setup accelerometer settings
         dataToWrite = 0
@@ -125,77 +120,64 @@ class LSM6DS3(object):
 
         bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL2_G, dataToWrite)
 
-    """
-    readAccelX
-    retrieves raw acceleration and returns the calculated acceleration
-
-    @param none
-    @return calcAccelX /calculated x-axis acceleration
-    """
-
     def readAccelX(self):
+        """
+        retrieves raw acceleration and returns the calculated acceleration
 
-        # connection between 0x6a and 0x6b is unstable. If 0x6a disconnects, use 0x6b
-        # LSM6DS3_ACC_GYRO_OUTX_L_XL prints the X-axis output
-        # output value is expressed as 16bit word in two's complement
+        @param none
+        @return calcAccelX /calculated x-axis acceleration
+        """
 
         rawAccelX = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_XL)
         calcAccelX = self.calcAccel(rawAccelX)
 
         return calcAccelX
 
-    """
-    readAccelY
-    retrieves raw acceleration and returns the calculated acceleration
-
-    @param none
-    @return calcAccelY /calculated y-axis acceleration
-    """
-
     def readAccelY(self):
+        """
+        retrieves raw acceleration and returns the calculated acceleration
+
+        @param none
+        @return calcAccelY /calculated y-axis acceleration
+        """
 
         rawAccelY = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_XL)
         calcAccelY = self.calcAccel(rawAccelY)
 
         return calcAccelY
 
-    """
-    readAccelZ
-    retrieves raw acceleration and returns the calculated acceleration
-
-    @param none
-    @return calcAccelZ /calculated z-axis acceleration
-    """
-
     def readAccelZ(self):
+        """
+        retrieves raw acceleration and returns the calculated acceleration
+
+        @param none
+        @return calcAccelZ /calculated z-axis acceleration
+        """
 
         rawAccelZ = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_XL)
         calcAccelZ = self.calcAccel(rawAccelZ)
 
         return calcAccelZ
 
-    """
-    calcAccel
-    converts the raw acceleration value from m/(s^2) to mg
-
-    @param rawAccel /the raw acceleration value obtained from the output register
-    @return calculatedAccel /the converted acceleration value
-    """
-
     def calcAccel(self, rawAccel):
+        """
+        converts the raw acceleration value from m/(s^2) to mg
+
+        @param rawAccel /the raw acceleration value obtained from the output register
+        @return calculatedAccel /the converted acceleration value
+        """
+
         calculatedAccel = float(rawAccel) * 0.0509 * (
             self.accelRange >> 1) / 1000  # accel range is =/- 2 4 8 16g
         return calculatedAccel
 
-    """
-    printAccelXYZ
-    prints the acceleration force in all three axes (x, y, and z)
-
-    @param none
-    @return none
-    """
-
     def printAccelXYZ(self):
+        """
+        prints the acceleration force in all three axes (x, y, and z)
+
+        @param none
+        @return none
+        """
 
         # initial accelerometer calibration
         xCalibration = self.readAccelX()
@@ -206,56 +188,52 @@ class LSM6DS3(object):
             X = self.readAccelX() - xCalibration
             Y = self.readAccelY() - yCalibration
             Z = self.readAccelZ() - zCalibration
-            print("X: " + str(X) + "Y: " + str(Y) + "Z: " + str(Z))
-
-    """
-    readGyroX
-    returns the angular rate of the x-axis
-
-    @param none
-    @return calculatedRate /x-axis angular rate
-    """
+            print("X:  " + str(X) + "  Y:  " + str(Y) + "  Z:  " + str(Z))
 
     def readGyroX(self):
+        """
+        returns the angular rate of the x-axis
+
+        @param none
+        @return calculatedRate /x-axis angular rate
+        """
+
         readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTX_L_G)
         calculatedRate = self.calcGyro(readValue)
         return calculatedRate
 
-    """
-    readGyroY
-    returns the angular rate of the y-axis
-
-    @param none
-    @return calculatedRate /y-axis angular rate
-    """
-
     def readGyroY(self):
+        """
+        returns the angular rate of the y-axis
+
+        @param none
+        @return calculatedRate /y-axis angular rate
+        """
+
         readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTY_L_G)
         calculatedRate = self.calcGyro(readValue)
         return calculatedRate
 
-    """
-    readGyroZ
-    returns the angular rate of the z-axis
-
-    @param none
-    @return calculatedRate /z-axis angular rate
-    """
-
     def readGyroZ(self):
+        """
+        returns the angular rate of the z-axis
+
+        @param none
+        @return calculatedRate /z-axis angular rate
+        """
+
         readValue = self.readRegisterInt16(LSM6DS3_ACC_GYRO_OUTZ_L_G)
         calculatedRate = self.calcGyro(readValue)
         return calculatedRate
 
-    """
-    calcGyro
-    Calculates the angular rate
-
-    @param rawGyro /raw value obtained from the register
-    @return calcAngRate /calculated angular rate from the raw value in the register
-    """
-
     def calcGyro(self, rawGyro):
+        """
+        Calculates the angular rate
+
+        @param rawGyro /raw value obtained from the register
+        @return calcAngRate /calculated angular rate from the raw value in the register
+        """
+
         gyroRangeDivisor = self.gyroRange / 125
         if (self.gyroRange == 245):
             gyroRangeDivisor = 2
@@ -263,15 +241,13 @@ class LSM6DS3(object):
         calcAngRate = rawGyro * 4.375 * gyroRangeDivisor / 1000
         return calcAngRate
 
-    """
-    printGyroXYZ
-    prints the angular rate of all axes
-
-    @param none
-    @return none
-    """
-
     def printGyroXYZ(self):
+        """
+        prints the angular rate of all axes
+
+        @param none
+        @return none
+        """
 
         # initial gyroscope calibration
         xCalibration = self.readGyroX()
@@ -285,15 +261,15 @@ class LSM6DS3(object):
 
             print("X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
 
-    """
-    readRegisterInt16
-    Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
-
-    @param register /the register to read blocks of 8 bits from
-    @return output /converted binary value of the 2s complement word
-    """
-
     def readRegisterInt16(self, register):
+        """
+        Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
+
+        @param register /the register to read blocks of 8 bits from
+        @return output /converted binary value of the 2s complement word
+        """
+
+        # connection between 0x6a and 0x6b is unstable. If 0x6b disconnects, use 0x6a
         try:
             bytes = bus.read_i2c_block_data(self.address, register, 2)
         except IOError:
