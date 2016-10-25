@@ -7,6 +7,9 @@ bus = smbus.SMBus(1)
 address = 0x6b
 
 class LSM6DS3(object):
+    """
+    class creating a LSM6DS3 sensor object
+    """
 
     def __init__(self):
         """
