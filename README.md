@@ -17,6 +17,10 @@ Utilized Python's SMBus module
     - Example
         - http://www.raspberry-projects.com/pi/programming-in-python/i2c-programming-in-python/using-the-i2c-interface-2
 
-Mac OS El Capitan Compatability Issue Notes:
+## Mac OS El Capitan Compatability Issue Notes:
 - Getting PySide GUI to work on PyCharm
+    - Ran into trouble getting the PySide modules to work on MacOS El Capitan
     - http://stackoverflow.com/questions/31343299/mysql-improperly-configured-reason-unsafe-use-of-relative-path
+    
+## Full Walkthrough
+- Work in Progress
