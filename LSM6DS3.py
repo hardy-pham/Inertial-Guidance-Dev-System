@@ -252,6 +252,7 @@ class LSM6DS3(object):
         @return none
         """
 
+        # TODO: fix calibration
         # initial gyroscope calibration
         xCalibration = self.readGyroX()
         yCalibration = self.readGyroY()
