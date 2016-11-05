@@ -1,12 +1,12 @@
 # Inertial-Guidance-Dev-System
-
+Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 
 Design for an inertial guidance development system
 
 Used to evaluate and develop accurate satellite dish pointing systems and simulations
-This system utilizes the IMU of the LSM6DS3 and interfaces with the Raspberry Pi 3
 
-## Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
+This system utilizes the IMU of the LSM6DS3 and interfaces with the Raspberry Pi 3 to
+provide the user with accurate 3-axis accelerometer and gyroscope readings
 
 ## Communicating with Raspberry Pi
 Utilized Python's SMBus module
@@ -16,11 +16,12 @@ Utilized Python's SMBus module
     - Read/Write block data
     - Example
         - http://www.raspberry-projects.com/pi/programming-in-python/i2c-programming-in-python/using-the-i2c-interface-2
-
-## Mac OS El Capitan Compatability Issue Notes:
-- Getting PySide GUI to work on PyCharm
-    - Ran into trouble getting the PySide modules to work on MacOS El Capitan
-    - http://stackoverflow.com/questions/31343299/mysql-improperly-configured-reason-unsafe-use-of-relative-path
     
 ## Full Walkthrough
 - Work in Progress
+
+## Compatability Issue Notes:
+- Mac OSX El Capitan
+    - Getting PySide module to work
+        - Ran into trouble getting the PySide modules to work on MacOS El Capitan
+        - http://stackoverflow.com/questions/31343299/mysql-improperly-configured-reason-unsafe-use-of-relative-path
