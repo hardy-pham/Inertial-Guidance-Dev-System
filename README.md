@@ -1,7 +1,7 @@
 # Inertial-Guidance-Dev-System
 Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 
-This system utilizes the IMU of the LSM6DS3 provider the user with accurate 3-axis accelerometer and gyroscope readings
+This system utilizes the IMU of the LSM6DS3 sensor, providing users with accurate 3-axis accelerometer and gyroscope readings
 
 ## Hardware Components
 - Raspberry Pi 3
