@@ -1,12 +1,11 @@
 # Inertial-Guidance-Dev-System
 Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 
-Design for an inertial guidance development system
+This system utilizes the IMU of the LSM6DS3 provider the user with accurate 3-axis accelerometer and gyroscope readings
 
-Used to evaluate and develop accurate satellite dish pointing systems and simulations
-
-This system utilizes the IMU of the LSM6DS3 and interfaces with the Raspberry Pi 3 to
-provide the user with accurate 3-axis accelerometer and gyroscope readings
+## Hardware Components
+- Raspberry Pi 3
+- LSM6DS3 sensor board
 
 ## Communicating with Raspberry Pi
 Utilized Python's SMBus module
@@ -20,7 +19,7 @@ Utilized Python's SMBus module
 ## Full Walkthrough
 - Work in Progress
 
-## Compatability Issue Notes:
+## Common Compatability Issues:
 - Mac OSX El Capitan
     - Getting PySide module to work
         - Ran into trouble getting the PySide modules to work on MacOS El Capitan
