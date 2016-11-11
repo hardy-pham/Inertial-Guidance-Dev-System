@@ -1,4 +1,4 @@
-# Inertial-Guidance-Dev-System
+# Inertial Guidance System
 Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 
 This system utilizes the IMU of the LSM6DS3 sensor, providing users with accurate 3-axis accelerometer and gyroscope readings

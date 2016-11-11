@@ -1,4 +1,6 @@
 import smbus
+import csv
+import time
 from LSM6DS3_Registers import *
 
 # initialize i2c connection using smbus module
@@ -246,7 +248,7 @@ class LSM6DS3(object):
 
     def printGyroXYZ(self):
         """
-        prints the angular rate of all axes
+        prints the angular rate of all axes to the terminal
 
         @param none
         @return none
@@ -264,6 +266,36 @@ class LSM6DS3(object):
             Z = round(self.readGyroZ() - zCalibration, 0)
 
             print("X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
+
+    def logAccelXYZ(self):
+        """
+        logs the output to a unique log file that is named based on the current time and date
+
+        @param none
+        @return none
+        """
+
+        # TODO: test functionality
+
+        # YearMonthDate_HourMinutesSeconds
+        curDateTime = time.strftime("%Y%m%d_%H%M%S")
+
+        # initial gyroscope calibration
+        xCalibration = self.readGyroX()
+        yCalibration = self.readGyroY()
+        zCalibration = self.readGyroZ()
+
+        with open('../logs/' + str(curDateTime) + '_log.csv', 'a') as file:
+            w = csv.writer(file)
+
+            while (True):
+                X = round(self.readGyroX() - xCalibration, 0)
+                Y = round(self.readGyroY() - yCalibration, 0)
+                Z = round(self.readGyroZ() - zCalibration, 0)
+
+                # append
+                # TODO: add time stamp
+                w.writerow([X, Y, Z])
 
     def readRegisterInt16(self, register):
         """
