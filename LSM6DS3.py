@@ -277,13 +277,24 @@ class LSM6DS3(object):
 
         # TODO: test functionality
 
+        counter = 0
         # YearMonthDate_HourMinutesSeconds
         curDateTime = time.strftime("%Y%m%d_%H%M%S")
+        xCalibration = 0
+        yCalibration = 0
+        zCalibration = 0
 
-        # initial gyroscope calibration
-        xCalibration = self.readGyroX()
-        yCalibration = self.readGyroY()
-        zCalibration = self.readGyroZ()
+        # initial calibration using 100 values
+        while(counter < 100):
+
+            counter += 1
+            xCalibration += self.readAccelX()
+            yCalibration += self.readAccelY()
+            zCalibration += self.readAccelZ()
+
+        xCalibration /= 100
+        yCalibration /= 100
+        zCalibration /= 100
 
         with open('../logs/' + str(curDateTime) + '_log.csv', 'a') as file:
             w = csv.writer(file)
