@@ -296,7 +296,48 @@ class LSM6DS3(object):
         yCalibration /= 100
         zCalibration /= 100
 
-        with open('../logs/' + str(curDateTime) + '_log.csv', 'a') as file:
+        with open('../logs/' + str(curDateTime) + '_acclog.csv', 'a') as file:
+            w = csv.writer(file)
+
+            while (True):
+                X = round(self.readAccelX() - xCalibration, 0)
+                Y = round(self.readAccelY() - yCalibration, 0)
+                Z = round(self.readAccelZ() - zCalibration, 0)
+
+                # append
+                # TODO: add time stamp
+                w.writerow([X, Y, Z])
+
+    def logGyroXYZ(self):
+        """
+        logs the output to a unique log file that is named based on the current time and date
+
+        @param none
+        @return none
+        """
+
+        # TODO: test functionality
+
+        counter = 0
+        # YearMonthDate_HourMinutesSeconds
+        curDateTime = time.strftime("%Y%m%d_%H%M%S")
+        xCalibration = 0
+        yCalibration = 0
+        zCalibration = 0
+
+        # initial calibration using 100 values
+        while(counter < 100):
+
+            counter += 1
+            xCalibration += self.readGyroX()
+            yCalibration += self.readGyroY()
+            zCalibration += self.readGyroZ()
+
+        xCalibration /= 100
+        yCalibration /= 100
+        zCalibration /= 100
+
+        with open('../logs/' + str(curDateTime) + '_gyrolog.csv', 'a') as file:
             w = csv.writer(file)
 
             while (True):
@@ -307,6 +348,7 @@ class LSM6DS3(object):
                 # append
                 # TODO: add time stamp
                 w.writerow([X, Y, Z])
+
 
     def readRegisterInt16(self, register):
         """
@@ -334,5 +376,6 @@ class LSM6DS3(object):
 # test calls
 test = LSM6DS3()
 test.begin()
-test.printAccelXYZ()
+#test.printAccelXYZ()
 # test.printGyroXYZ()
+test.logGyroXYZ()

@@ -1,3 +1,4 @@
+# accelerometer and gyroscope settings
 self.address = 0x6b
 self.gyroEnabled = 1            # can be 0 or 1
 self.gyroRange = 2000           # Max deg/s. Can be: 125, 245, 500, 1000, 2000
