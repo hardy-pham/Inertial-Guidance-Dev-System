@@ -277,32 +277,16 @@ class LSM6DS3(object):
 
         # TODO: test functionality
 
-        counter = 0
         # YearMonthDate_HourMinutesSeconds
         curDateTime = time.strftime("%Y%m%d_%H%M%S")
-        xCalibration = 0
-        yCalibration = 0
-        zCalibration = 0
-
-        # initial calibration using 100 values
-        while(counter < 100):
-
-            counter += 1
-            xCalibration += self.readAccelX()
-            yCalibration += self.readAccelY()
-            zCalibration += self.readAccelZ()
-
-        xCalibration /= 100
-        yCalibration /= 100
-        zCalibration /= 100
 
         with open('../logs/' + str(curDateTime) + '_acclog.csv', 'a') as file:
             w = csv.writer(file)
 
             while (True):
-                X = round(self.readAccelX() - xCalibration, 0)
-                Y = round(self.readAccelY() - yCalibration, 0)
-                Z = round(self.readAccelZ() - zCalibration, 0)
+                X = round(self.readAccelX(), 0)
+                Y = round(self.readAccelY(), 0)
+                Z = round(self.readAccelZ(), 0)
 
                 # append
                 # TODO: add time stamp
@@ -376,6 +360,6 @@ class LSM6DS3(object):
 # test calls
 test = LSM6DS3()
 test.begin()
-#test.printAccelXYZ()
+# test.printAccelXYZ()
 # test.printGyroXYZ()
 test.logGyroXYZ()
