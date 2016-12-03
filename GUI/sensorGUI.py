@@ -1,6 +1,7 @@
 from PyQt4 import QtCore, QtGui
 from LSM6DS3 import *
 import subprocess, sys
+import configparser
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -10,20 +11,25 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+
 class Ui_MainWindow(object):
     def __init__(self):
-        
+        self.config = configparser.ConfigParser()
+        self.config.read('LSM6DS3settings.ini')
+
         self.LSM6DS3 = LSM6DS3()
         super(Ui_MainWindow, self).__init__()
         self.setupUi(MainWindow)
         self.retranslateUi(MainWindow)
-        
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(1025, 597)
@@ -4181,33 +4187,80 @@ class Ui_MainWindow(object):
         self.Tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-
     def gyroRangeSet(self, value):
         self.LSM6DS3.gyroRange = value
-        print('Gyroscope range set to: ' + str(value) )
+        self.config['gyroscope']['gyrorange'] = str(value)
+        print('Gyroscope range set to: ' + str(value))
 
     def gyroODRSet(self, value):
         self.LSM6DS3.gyroSampleRate = value
+        self.config['gyroscope']['gyrosamplerate'] = str(value)
         print('Gyroscope ODR set to: ' + str(value))
 
     def gyroBandwidthSet(self, value):
         self.LSM6DS3.gyroBandwidth = value
+        self.config['gyroscope']['gyrobandwidth'] = str(value)
         print('Gyroscope bandwidth set to: ' + str(value))
+
+    def logTermToggle(self):
+        logTermOn = self.checkBox_LogTerm.checkState()
+
+        if (logTermOn > 0):
+            logTermOn = 1
+
+        self.LSM6DS3.logToTerminal = logTermOn
+        self.config['log']['logtoterm'] = str(logTermOn)
+
+    def logFileToggle(self, value):
+        logFileOn = self.checkBox_LogFile.checkState()
+
+        if (logFileOn > 0):
+            logFileOn = 1
+
+        self.LSM6DS3.logToFile = logFileOn
+        self.config['log']['logtofile'] = str(logFileOn)
+
+    def gyroToggle(self):
+        gyroOn = self.checkBox_gyroON.checkState()
+
+        if (gyroOn > 0):
+            gyroOn = 1
+
+        self.LSM6DS3.gyroEnabled = gyroOn
+        print(gyroOn)
+        self.config['gyroscope']['gyroenabled'] = str(gyroOn)
+
+    def accToggle(self, value):
+        self.LSM6DS3.accelEnabled = value
+        self.config['accelerometer']['accelenabled'] = str(value)
 
     def accRangeSet(self, value):
         self.LSM6DS3.accelRange = value
+        self.config['accelerometer']['accelrange'] = str(value)
         print('Accelerometer range set to: ' + str(value))
 
     def accBandwidthSet(self, value):
         self.LSM6DS3.accelBandwidth = value
+        self.config['accelerometer']['accelbandwidth'] = str(value)
         print('Accelerometer bandwidth set to: ' + str(value))
 
     def accODRSet(self, value):
         self.LSM6DS3.accelSampleRate = value
+        self.config['accelerometer']['accelsamplerate'] = str(value)
         print('Accelerometer ODR set to: ' + str(value))
 
     def startSensor(self):
-        self.LSM6DS3.begin()
+        if (self.LSM6DS3.printInProgress == 1):
+            return
+
+        print(self.LSM6DS3.logToTerminal)
+        if ((self.LSM6DS3.logToTerminal == 1) and (self.LSM6DS3.gyroEnabled == 1)):
+            self.LSM6DS3.begin()
+            self.LSM6DS3.printGyroXYZ()
+
+    def stopSensor(self):
+        if (self.LSM6DS3.printInProgress == 1):
+            self.LSM6DS3.stopLog = 1
 
     def setDefaults(self):
         setDefaultGyroRange = 'self.gyroRange' + str(self.LSM6DS3.gyroRange) + '.setChecked(True)'
@@ -4219,12 +4272,18 @@ class Ui_MainWindow(object):
 
         logToTerminal = self.LSM6DS3.logToTerminal
         logToFile = self.LSM6DS3.logToFile
+        accelOn = self.LSM6DS3.accelEnabled
+        gyroOn = self.LSM6DS3.gyroEnabled
 
-        if(logToTerminal == True):
+        if (logToTerminal == True):
             self.checkBox_LogTerm.setChecked(True)
-        if(logToFile == True):
+        if (logToFile == True):
             self.checkBox_LogFile.setChecked(True)
-        
+        if (accelOn == 1):
+            self.checkBox_accON.setChecked(True)
+        if (gyroOn == 1):
+            self.checkBox_gyroON.setChecked(True)
+
         eval(setDefaultGyroRange)
         eval(setDefaultGyroODR)
         eval(setDefaultGyroBandwidth)
@@ -4232,9 +4291,13 @@ class Ui_MainWindow(object):
         eval(setDefaultAccelBandwidth)
         eval(setDefaultAccelODR)
 
+    def applyDefault(self):
+        with open('LSM6DS3settings.ini', 'w') as configfile:
+            self.config.write(configfile)
+
     def retranslateUi(self, MainWindow):
         self.setDefaults()
-        
+
         MainWindow.setWindowTitle(_translate("MainWindow", "LSM6DS3 Control Panel", None))
         self.gyroRange125.setText(_translate("MainWindow", "125", None))
         self.gyroRange245.setText(_translate("MainWindow", "245", None))
@@ -4242,13 +4305,13 @@ class Ui_MainWindow(object):
         self.gyroRange1000.setText(_translate("MainWindow", "1000", None))
         self.gyroRange2000.setText(_translate("MainWindow", "2000", None))
 
-        #gyroRange click action
+        # gyroRange click action
         self.gyroRange125.clicked.connect(lambda: self.gyroRangeSet(125))
         self.gyroRange245.clicked.connect(lambda: self.gyroRangeSet(245))
         self.gyroRange500.clicked.connect(lambda: self.gyroRangeSet(500))
         self.gyroRange1000.clicked.connect(lambda: self.gyroRangeSet(1000))
         self.gyroRange2000.clicked.connect(lambda: self.gyroRangeSet(2000))
-        
+
         self.label.setText(_translate("MainWindow", "Gyroscope Settings", None))
         self.label_2.setText(_translate("MainWindow", "Accelerometer Settings", None))
         self.label_3.setText(_translate("MainWindow", "Range (deg/s) :", None))
@@ -4261,8 +4324,8 @@ class Ui_MainWindow(object):
         self.gyroODR833.setText(_translate("MainWindow", "833", None))
         self.gyroODR1666.setText(_translate("MainWindow", "1666", None))
 
-        #gyroODR click action
-        self.gyroODR13.clicked.connect(lambda: self.gyroODRSet(13))        
+        # gyroODR click action
+        self.gyroODR13.clicked.connect(lambda: self.gyroODRSet(13))
         self.gyroODR26.clicked.connect(lambda: self.gyroODRSet(26))
         self.gyroODR52.clicked.connect(lambda: self.gyroODRSet(52))
         self.gyroODR104.clicked.connect(lambda: self.gyroODRSet(104))
@@ -4270,7 +4333,7 @@ class Ui_MainWindow(object):
         self.gyroODR416.clicked.connect(lambda: self.gyroODRSet(416))
         self.gyroODR833.clicked.connect(lambda: self.gyroODRSet(833))
         self.gyroODR1666.clicked.connect(lambda: self.gyroODRSet(1666))
-        
+
         self.label_4.setText(_translate("MainWindow", "Sample Rate (Hz) :", None))
         self.label_5.setText(_translate("MainWindow", "Bandwidth (Hz) :", None))
         self.accelRange2.setText(_translate("MainWindow", "2", None))
@@ -4278,23 +4341,23 @@ class Ui_MainWindow(object):
         self.accelRange8.setText(_translate("MainWindow", "8", None))
         self.accelRange16.setText(_translate("MainWindow", "16", None))
 
-        #accRange click action
+        # accRange click action
         self.accelRange2.clicked.connect(lambda: self.accRangeSet(2))
         self.accelRange4.clicked.connect(lambda: self.accRangeSet(4))
         self.accelRange8.clicked.connect(lambda: self.accRangeSet(8))
         self.accelRange16.clicked.connect(lambda: self.accRangeSet(16))
-        
+
         self.accelBandwidth50.setText(_translate("MainWindow", "50", None))
         self.accelBandwidth100.setText(_translate("MainWindow", "100", None))
         self.accelBandwidth200.setText(_translate("MainWindow", "200", None))
         self.accelBandwidth400.setText(_translate("MainWindow", "400", None))
 
-        #accBandwidth click action
+        # accBandwidth click action
         self.accelBandwidth50.clicked.connect(lambda: self.accBandwidthSet(50))
         self.accelBandwidth100.clicked.connect(lambda: self.accBandwidthSet(100))
         self.accelBandwidth200.clicked.connect(lambda: self.accBandwidthSet(200))
         self.accelBandwidth400.clicked.connect(lambda: self.accBandwidthSet(400))
-        
+
         self.label_11.setText(_translate("MainWindow", "Range (G) :", None))
         self.label_12.setText(_translate("MainWindow", "Bandwidth (Hz) :", None))
         self.accelSampleRate13.setText(_translate("MainWindow", "13", None))
@@ -4309,7 +4372,7 @@ class Ui_MainWindow(object):
         self.accelSampleRate6664.setText(_translate("MainWindow", "6664", None))
         self.accelSampleRate13330.setText(_translate("MainWindow", "13330", None))
 
-        #accODR click action
+        # accODR click action
         self.accelSampleRate13.clicked.connect(lambda: self.accODRSet(13))
         self.accelSampleRate26.clicked.connect(lambda: self.accODRSet(26))
         self.accelSampleRate52.clicked.connect(lambda: self.accODRSet(52))
@@ -4321,39 +4384,70 @@ class Ui_MainWindow(object):
         self.accelSampleRate3332.clicked.connect(lambda: self.accODRSet(3332))
         self.accelSampleRate6664.clicked.connect(lambda: self.accODRSet(6664))
         self.accelSampleRate13330.clicked.connect(lambda: self.accODRSet(13330))
-        
-                                         
+
         self.label_13.setText(_translate("MainWindow", "Sample Rate (Hz) :", None))
         self.gyroBandwidth50.setText(_translate("MainWindow", "50", None))
         self.gyroBandwidth100.setText(_translate("MainWindow", "100", None))
         self.gyroBandwidth200.setText(_translate("MainWindow", "200", None))
         self.gyroBandwidth400.setText(_translate("MainWindow", "400", None))
 
-        #gyroBandwidth click action
+        # gyroBandwidth click action
         self.gyroBandwidth50.clicked.connect(lambda: self.gyroBandwidthSet(50))
         self.gyroBandwidth100.clicked.connect(lambda: self.gyroBandwidthSet(100))
         self.gyroBandwidth200.clicked.connect(lambda: self.gyroBandwidthSet(200))
         self.gyroBandwidth400.clicked.connect(lambda: self.gyroBandwidthSet(400))
-                                         
-        self.checkBox_gyroON.setText(_translate("MainWindow", "Gyroscope ON", None))        
+
+        self.checkBox_gyroON.setText(_translate("MainWindow", "Gyroscope ON", None))
+
+        # checkbox for gyro and acc click
+        self.checkBox_gyroON.clicked.connect(lambda: self.gyroToggle())
         self.checkBox_accON.setText(_translate("MainWindow", "Accelerometer ON", None))
-        
+
+        accOn = self.checkBox_accON.checkState()
+
+        if (accOn > 0):
+            accSwap = 0
+        else:
+            accSwap = 1
+
+        self.checkBox_accON.clicked.connect(lambda: self.accToggle(accSwap))
+
         self.checkBox_LogTerm.setText(_translate("MainWindow", "Log to Terminal", None))
         self.checkBox_LogFile.setText(_translate("MainWindow", "Log to File", None))
+
+        # checkbox for logging toggle
+        self.checkBox_LogTerm.clicked.connect(lambda: self.logTermToggle())
+
+        logFileOn = self.checkBox_LogFile.checkState()
+        if (logFileOn > 0):
+            logFileSwap = 0
+        else:
+            logFileSwap = 1
+        self.checkBox_LogFile.clicked.connect(lambda: self.logFileToggle())
+
         self.push_SetDefault.setText(_translate("MainWindow", "Set as Default", None))
+
+        # apply default click
+        self.push_SetDefault.clicked.connect(lambda: self.applyDefault())
+
         self.pushButton_Stop.setText(_translate("MainWindow", "Stop", None))
         self.pushButton_Start.setText(_translate("MainWindow", "Start", None))
 
-        #push start
+        # push start
         self.pushButton_Start.clicked.connect(lambda: self.startSensor())
-        
+
         self.label_14.setText(_translate("MainWindow", "LSM6DS3 Sensor", None))
         self.pushButton_Stop_2.setText(_translate("MainWindow", "Datasheet", None))
 
-        # datasheet 
-        self.pushButton_Stop_2.clicked.connect(lambda: subprocess.call(["xdg-open",'/home/pi/Desktop/LSM6DS3datasheet.pdf']))
-        
-        self.Tabs.setTabText(self.Tabs.indexOf(self.SensorSettingsTab), _translate("MainWindow", "Sensor Settings", None))
+        # push stop
+        self.pushButton_Stop.clicked.connect(lambda: self.stopSensor())
+
+        # datasheet
+        self.pushButton_Stop_2.clicked.connect(
+            lambda: subprocess.call(["xdg-open", '/home/pi/Desktop/LSM6DS3datasheet.pdf']))
+
+        self.Tabs.setTabText(self.Tabs.indexOf(self.SensorSettingsTab),
+                             _translate("MainWindow", "Sensor Settings", None))
         self.label_345.setText(_translate("MainWindow", "INT1_CTRL", None))
         self.write_0Eh.setText(_translate("MainWindow", "Write", None))
         self.read_04h.setText(_translate("MainWindow", "Read", None))
@@ -4827,8 +4921,10 @@ class Ui_MainWindow(object):
         self.Tabs.setTabText(self.Tabs.indexOf(self.RegisterTab3), _translate("MainWindow", "Register Control 3", None))
         self.label_26.setText(_translate("MainWindow", "TextLabel", None))
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtGui.QApplication(sys.argv)
     MainWindow = QtGui.QMainWindow()
     ui = Ui_MainWindow()

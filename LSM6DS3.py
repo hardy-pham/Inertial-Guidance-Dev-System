@@ -1,10 +1,13 @@
 import smbus
 import time
 from LSM6DS3_Registers import *
+import configparser
+from PyQt4 import QtCore, QtGui
 
 # initialize i2c connection through smbus
 # TODO: fix to be OOP
 bus = smbus.SMBus(1)
+
 
 # TODO: Format properly
 class LSM6DS3(object):
@@ -15,19 +18,28 @@ class LSM6DS3(object):
     """
 
     def __init__(self):
+
+        # parse config file for settings
+        config = configparser.ConfigParser()
+
+        config.read('LSM6DS3settings.ini')
+        self.stopLog = 0
+
         self.address = 0x6b  # can be 0x6a or 0x6b --> 0x6a seems to be more stable as of now
-        self.gyroEnabled = 1  # can be 0 or 1
-        self.gyroRange = 125  # Max deg/s. Can be: 125, 245, 500, 1000, 2000
-        self.gyroSampleRate = 416  #default 416 Hz. Can be: 13, 26, 52, 104, 208, 416, 833, 1666
-        self.gyroBandwidth = 400  # Hz. Can be: 50, 100, 200, 400
+        self.gyroEnabled = int(config['gyroscope']['gyroenabled'])  # can be 0 or 1
+        self.gyroRange = int(config['gyroscope']['gyrorange'])  # Max deg/s. Can be: 125, 245, 500, 1000, 2000
+        self.gyroSampleRate = int(
+            config['gyroscope']['gyrosamplerate'])  # default 416 Hz. Can be: 13, 26, 52, 104, 208, 416, 833, 1666
+        self.gyroBandwidth = int(config['gyroscope']['gyrobandwidth'])  # Hz. Can be: 50, 100, 200, 400
         self.gyroFifoEnabled = 1  # Set to include gyro in FIFO
         self.gyroFifoDecimation = 1  # Set 1 for on
 
-        self.accelEnabled = 1
+        self.accelEnabled = int(config['accelerometer']['accelenabled'])
         self.accelODROff = 1
-        self.accelRange = 16  # Max G force readable. Can be: 2, 4, 8, 16
-        self.accelSampleRate = 416  # Hz. Can be: 13, 26, 52, 104, 208, 416, 833, 1666, 3332, 6664, 13330
-        self.accelBandwidth = 100  # Hz. Can be: 50, 100, 200,
+        self.accelRange = int(config['accelerometer']['accelrange'])  # Max G force readable. Can be: 2, 4, 8, 16
+        self.accelSampleRate = int(config['accelerometer'][
+                                       'accelsamplerate'])  # Hz. Can be: 13, 26, 52, 104, 208, 416, 833, 1666, 3332, 6664, 13330
+        self.accelBandwidth = int(config['accelerometer']['accelbandwidth'])  # Hz. Can be: 50, 100, 200,
         self.accelFifoEnabled = 1  # Set to include accelerometer in the FIFO
         self.accelFifoDecimation = 1  # Set 1 for on
 
@@ -42,8 +54,10 @@ class LSM6DS3(object):
         self.fifoModeWord = 0  # default off
 
         # settings from control panel
-        self.logToTerminal = True
-        self.logToFile = True
+        self.logToTerminal = int(config['log']['logtoterm'])
+        self.logToFile = int(config['log']['logtofile'])
+
+        self.printInProgress = 0
 
     """
     begin
@@ -54,8 +68,6 @@ class LSM6DS3(object):
     """
 
     def begin(self):
-        #print('The GYROBANDWIDTH IS:' + str(self.gyroBandwidth))
-        print('GYRO RANGE IS: ' + str(self.gyroRange))
 
         # setup accelerometer settings
         dataToWrite = 0
@@ -86,15 +98,14 @@ class LSM6DS3(object):
                 208: LSM6DS3_ACC_GYRO_ODR_XL_208Hz,
                 416: LSM6DS3_ACC_GYRO_ODR_XL_416Hz,
                 833: LSM6DS3_ACC_GYRO_ODR_XL_833Hz,
-                1660: LSM6DS3_ACC_GYRO_ODR_XL_1660Hz,
-                3330: LSM6DS3_ACC_GYRO_ODR_XL_3330Hz,
-                6660: LSM6DS3_ACC_GYRO_ODR_XL_6660Hz,
+                1666: LSM6DS3_ACC_GYRO_ODR_XL_1660Hz,
+                3332: LSM6DS3_ACC_GYRO_ODR_XL_3330Hz,
+                6664: LSM6DS3_ACC_GYRO_ODR_XL_6660Hz,
                 13330: LSM6DS3_ACC_GYRO_ODR_XL_13330Hz
             }
 
             dataToWrite += accelBandWidthDict[self.accelBandwidth] + accelRangeDict[self.accelRange] + \
-                           accelSampleRateDict[
-                               self.accelSampleRate]
+                           accelSampleRateDict[self.accelSampleRate]
 
         # setup control register 1
         bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL1_XL, dataToWrite)
@@ -212,7 +223,7 @@ class LSM6DS3(object):
             Y = self.readAccelY() - yCalibration
             Z = self.readAccelZ() - zCalibration
             print("Accelerometer  X: " + str(X) + "  Y:  " + str(Y) + "  Z:  " + str(Z))
-            #time.sleep(0.2)
+            # time.sleep(0.2)
 
     """
     readGyroX
@@ -278,20 +289,31 @@ class LSM6DS3(object):
     """
 
     def printGyroXYZ(self):
-
+        self.printInProgress = 1
         # initial gyroscope calibration
         xCalibration = self.readGyroX()
         yCalibration = self.readGyroY()
         zCalibration = self.readGyroZ()
-
         while (True):
+            try:
+                QtCore.QCoreApplication.processEvents()
 
-            X = round(self.readGyroX() - xCalibration, 0)
-            Y = round(self.readGyroY() - yCalibration, 0)
-            Z = round(self.readGyroZ() - zCalibration, 0)
+                if (self.stopLog == 1):
+                    self.stopLog = 0
+                    self.printInProgress = 0
+                    print('[Logging Stopped]')
+                    break
 
-            print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
-            #time.sleep(0.2)
+                X = round(self.readGyroX() - xCalibration, 0)
+                Y = round(self.readGyroY() - yCalibration, 0)
+                Z = round(self.readGyroZ() - zCalibration, 0)
+
+                print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
+
+            except Exception:
+                print('[Logging Stopped due to Exception]')
+                break
+
     """
     readRegisterInt16
     Reads blocks of bytes in order to process 16 bit returns from registers of 8 bits
@@ -315,8 +337,7 @@ class LSM6DS3(object):
 
         return output
 
-
-#test = LSM6DS3()
-#test.begin()
-#test.printGyroXYZ()
-#test.printAccelXYZ()
+# test = LSM6DS3()
+# test.begin()
+# test.printGyroXYZ()
+# test.printAccelXYZ()
