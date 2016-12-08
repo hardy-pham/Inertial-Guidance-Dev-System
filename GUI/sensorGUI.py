@@ -4124,13 +4124,16 @@ class Ui_MainWindow(object):
             return
 
         # gyro and accel output to term
-
+        if (((self.LSM6DS3.logToTerminal == 1) or (self.LSM6DS3.logToFile == 1)) and (
+            self.LSM6DS3.gyroEnabled == 1) and (self.LSM6DS3.accelEnabled == 1)):
+            self.LSM6DS3.begin()
+            self.LSM6DS3.printComboXYZ()
         # gyro output to term
-        if ((self.LSM6DS3.logToTerminal == 1) and (self.LSM6DS3.gyroEnabled == 1)):
+        elif ((self.LSM6DS3.logToTerminal == 1 or self.LSM6DS3.logToFile == 1) and (self.LSM6DS3.gyroEnabled == 1)):
             self.LSM6DS3.begin()
             self.LSM6DS3.printGyroXYZ()
         # accel output to term
-        elif ((self.LSM6DS3.logToTerminal == 1) and (self.LSM6DS3.accelEnabled == 1)):
+        elif ((self.LSM6DS3.logToTerminal == 1 or self.LSM6DS3.logToFile == 1) and (self.LSM6DS3.accelEnabled == 1)):
             self.LSM6DS3.begin()
             self.LSM6DS3.printAccelXYZ()
 
@@ -4175,17 +4178,31 @@ class Ui_MainWindow(object):
 
     # converts decimal number to an 8 bit binary number with the structure of ########
     def displayBinary(self, decimal):
-        binary = bin(decimal)
+        binary = bin(decimal)[2:]
         return binary
+
+    # writes the input to the designated register
+    def writeRegister(self, address, registerAddress):
+        text = (eval('self.text_' + str(address) + '.text()'))
+
+        if (text):
+            text = int(text)
+        else:
+            return
+
+        decimal = int(str(text), 2)
+
+        self.LSM6DS3.bus.write_byte_data(self.LSM6DS3.address, registerAddress, decimal)
+        print(str(text) + ' has been written to the designated register.')
+        return
 
     # reads the contents of the designated register
     def readRegister(self, translate, registerAddress):
-        print('Reg address: ' + str(registerAddress))
 
         registerContent = self.LSM6DS3.readRegisterInt16(registerAddress)
         eightBitDisplay = self.displayBinary(registerContent)
         displayContent = 'self.text_' + str(translate) + ".setText('" + str(eightBitDisplay) + "')"
-        print('Contents of address: ' + str(eightBitDisplay))
+        print('Contents of register: ' + str(eightBitDisplay))
         eval(displayContent)
 
     def retranslateUi(self, MainWindow):
@@ -4330,7 +4347,131 @@ class Ui_MainWindow(object):
 
         # datasheet
         self.pushButton_Stop_2.clicked.connect(
-            lambda: subprocess.call(["xdg-open", '/home/pi/Desktop/LSM6DS3datasheet.pdf']))
+            lambda: subprocess.call(["xdg-open", '/home/pi/Desktop/ECE191-LSM6DS3/LSM6DS3datasheet.pdf']))
+
+        # write buttons
+        self.write_01h.clicked.connect(lambda: self.writeRegister('01h', LSM6DS3_ACC_GYRO_RAM_ACCESS))
+        self.write_04h.clicked.connect(lambda: self.writeRegister('04h', LSM6DS3_ACC_GYRO_SENSOR_SYNC_TIME))
+        self.write_05h_1.clicked.connect(lambda: self.writeRegister('05h', LSM6DS3_ACC_GYRO_SENSOR_SYNC_EN))
+        self.write_06h.clicked.connect(lambda: self.writeRegister('06h_1', LSM6DS3_ACC_GYRO_FIFO_CTRL1))
+        self.write_07h.clicked.connect(lambda: self.writeRegister('07h', LSM6DS3_ACC_GYRO_FIFO_CTRL2))
+        self.write_08h.clicked.connect(lambda: self.writeRegister('08h', LSM6DS3_ACC_GYRO_FIFO_CTRL3))
+        self.write_09h.clicked.connect(lambda: self.writeRegister('09h', LSM6DS3_ACC_GYRO_FIFO_CTRL4))
+        self.write_0Ah.clicked.connect(lambda: self.writeRegister('0Ah', LSM6DS3_ACC_GYRO_FIFO_CTRL5))
+        self.write_0Bh.clicked.connect(lambda: self.writeRegister('0Bh', LSM6DS3_ACC_GYRO_ORIENT_CFG_G))
+        self.write_0Dh.clicked.connect(lambda: self.writeRegister('0Dh', LSM6DS3_ACC_GYRO_INT1_CTRL))
+        self.write_0Eh.clicked.connect(lambda: self.writeRegister('0Eh', LSM6DS3_ACC_GYRO_INT2_CTRL))
+        self.write_0Fh.clicked.connect(lambda: self.writeRegister('0Fh', LSM6DS3_ACC_GYRO_WHO_AM_I_REG))
+        self.write_10h.clicked.connect(lambda: self.writeRegister('10h', LSM6DS3_ACC_GYRO_CTRL1_XL))
+        self.write_11h.clicked.connect(lambda: self.writeRegister('11h', LSM6DS3_ACC_GYRO_CTRL2_G))
+        self.write_12h.clicked.connect(lambda: self.writeRegister('12h', LSM6DS3_ACC_GYRO_CTRL3_C))
+        self.write_13h.clicked.connect(lambda: self.writeRegister('13h', LSM6DS3_ACC_GYRO_CTRL4_C))
+        self.write_14h.clicked.connect(lambda: self.writeRegister('14h', LSM6DS3_ACC_GYRO_CTRL5_C))
+        self.write_15h.clicked.connect(lambda: self.writeRegister('15h', LSM6DS3_ACC_GYRO_CTRL6_G))
+        self.write_16h.clicked.connect(lambda: self.writeRegister('16h', LSM6DS3_ACC_GYRO_CTRL7_G))
+        self.write_17h.clicked.connect(lambda: self.writeRegister('17h', LSM6DS3_ACC_GYRO_CTRL8_XL))
+        self.write_18h.clicked.connect(lambda: self.writeRegister('18h', LSM6DS3_ACC_GYRO_CTRL9_XL))
+        self.write_19h.clicked.connect(lambda: self.writeRegister('19h', LSM6DS3_ACC_GYRO_CTRL10_C))
+        self.write_1Ah.clicked.connect(lambda: self.writeRegister('1Ah', LSM6DS3_ACC_GYRO_MASTER_CONFIG))
+        self.write_1Bh.clicked.connect(lambda: self.writeRegister('1Bh', LSM6DS3_ACC_GYRO_WAKE_UP_SRC))
+        self.write_1Ch.clicked.connect(lambda: self.writeRegister('1Ch', LSM6DS3_ACC_GYRO_TAP_SRC))
+        self.write_1Dh.clicked.connect(lambda: self.writeRegister('1Dh', LSM6DS3_ACC_GYRO_D6D_SRC))
+        self.write_1Eh.clicked.connect(lambda: self.writeRegister('1Eh', LSM6DS3_ACC_GYRO_STATUS_REG))
+        self.write_20h.clicked.connect(lambda: self.writeRegister('20h', LSM6DS3_ACC_GYRO_OUT_TEMP_L))
+        self.write_21h.clicked.connect(lambda: self.writeRegister('21h', LSM6DS3_ACC_GYRO_OUT_TEMP_H))
+        self.write_22h.clicked.connect(lambda: self.writeRegister('22h', LSM6DS3_ACC_GYRO_OUTX_L_G))
+        self.write_23h.clicked.connect(lambda: self.writeRegister('23h', LSM6DS3_ACC_GYRO_OUTX_H_G))
+        self.write_24h.clicked.connect(lambda: self.writeRegister('24h', LSM6DS3_ACC_GYRO_OUTY_L_G))
+        self.write_25h.clicked.connect(lambda: self.writeRegister('25h', LSM6DS3_ACC_GYRO_OUTY_H_G))
+        self.write_26h.clicked.connect(lambda: self.writeRegister('26h', LSM6DS3_ACC_GYRO_OUTZ_L_G))
+        self.write_27h.clicked.connect(lambda: self.writeRegister('27h', LSM6DS3_ACC_GYRO_OUTZ_H_G))
+        self.write_28h.clicked.connect(lambda: self.writeRegister('28h', LSM6DS3_ACC_GYRO_OUTX_L_XL))
+        self.write_29h.clicked.connect(lambda: self.writeRegister('29h', LSM6DS3_ACC_GYRO_OUTX_H_XL))
+        self.write_2Ah.clicked.connect(lambda: self.writeRegister('2Ah', LSM6DS3_ACC_GYRO_OUTY_L_XL))
+        self.write_2Bh.clicked.connect(lambda: self.writeRegister('2Bh', LSM6DS3_ACC_GYRO_OUTY_H_XL))
+        self.write_2Ch.clicked.connect(lambda: self.writeRegister('2Ch', LSM6DS3_ACC_GYRO_OUTZ_L_XL))
+        self.write_2Dh.clicked.connect(lambda: self.writeRegister('2Dh', LSM6DS3_ACC_GYRO_OUTZ_H_XL))
+
+        # write buttons page2
+        self.write_2Eh.clicked.connect(lambda: self.writeRegister('2Eh', LSM6DS3_ACC_GYRO_SENSORHUB1_REG))
+        self.write_2Fh.clicked.connect(lambda: self.writeRegister('2Fh', LSM6DS3_ACC_GYRO_SENSORHUB2_REG))
+        self.write_30h.clicked.connect(lambda: self.writeRegister('30h', LSM6DS3_ACC_GYRO_SENSORHUB3_REG))
+        self.write_31h.clicked.connect(lambda: self.writeRegister('31h', LSM6DS3_ACC_GYRO_SENSORHUB4_REG))
+        self.write_32h.clicked.connect(lambda: self.writeRegister('32h', LSM6DS3_ACC_GYRO_SENSORHUB5_REG))
+        self.write_33h.clicked.connect(lambda: self.writeRegister('33h', LSM6DS3_ACC_GYRO_SENSORHUB6_REG))
+        self.write_34h.clicked.connect(lambda: self.writeRegister('34h', LSM6DS3_ACC_GYRO_SENSORHUB7_REG))
+        self.write_35h.clicked.connect(lambda: self.writeRegister('35h', LSM6DS3_ACC_GYRO_SENSORHUB8_REG))
+        self.write_36h.clicked.connect(lambda: self.writeRegister('36h', LSM6DS3_ACC_GYRO_SENSORHUB9_REG))
+        self.write_37h.clicked.connect(lambda: self.writeRegister('37h', LSM6DS3_ACC_GYRO_SENSORHUB10_REG))
+        self.write_38h.clicked.connect(lambda: self.writeRegister('38h', LSM6DS3_ACC_GYRO_SENSORHUB11_REG))
+        self.write_39h.clicked.connect(lambda: self.writeRegister('39h', LSM6DS3_ACC_GYRO_SENSORHUB12_REG))
+        self.write_3Ah.clicked.connect(lambda: self.writeRegister('3Ah', LSM6DS3_ACC_GYRO_FIFO_STATUS1))
+        self.write_3Bh.clicked.connect(lambda: self.writeRegister('3Bh', LSM6DS3_ACC_GYRO_FIFO_STATUS2))
+        self.write_3Ch.clicked.connect(lambda: self.writeRegister('3Ch', LSM6DS3_ACC_GYRO_FIFO_STATUS3))
+        self.write_3Dh.clicked.connect(lambda: self.writeRegister('3Dh', LSM6DS3_ACC_GYRO_FIFO_STATUS4))
+        self.write_3Eh.clicked.connect(lambda: self.writeRegister('3Eh', LSM6DS3_ACC_GYRO_FIFO_DATA_OUT_L))
+        self.write_3Fh.clicked.connect(lambda: self.writeRegister('3Fh', LSM6DS3_ACC_GYRO_FIFO_DATA_OUT_H))
+        self.write_40h.clicked.connect(lambda: self.writeRegister('40h', LSM6DS3_ACC_GYRO_TIMESTAMP0_REG))
+        self.write_41h.clicked.connect(lambda: self.writeRegister('41h', LSM6DS3_ACC_GYRO_TIMESTAMP1_REG))
+        self.write_42h.clicked.connect(lambda: self.writeRegister('42h', LSM6DS3_ACC_GYRO_TIMESTAMP2_REG))
+        self.write_49h.clicked.connect(lambda: self.writeRegister('49h', 73))
+        self.write_4Ah.clicked.connect(lambda: self.writeRegister('4Ah', 74))
+        self.write_4Bh.clicked.connect(lambda: self.writeRegister('4Bh', LSM6DS3_ACC_GYRO_STEP_COUNTER_L))
+        self.write_4Ch.clicked.connect(lambda: self.writeRegister('4Ch', LSM6DS3_ACC_GYRO_STEP_COUNTER_H))
+        self.write_4Dh.clicked.connect(lambda: self.writeRegister('4Dh', 77))
+        self.write_4Eh.clicked.connect(lambda: self.writeRegister('4Eh', 78))
+        self.write_4Fh.clicked.connect(lambda: self.writeRegister('4Fh', 79))
+        self.write_50h.clicked.connect(lambda: self.writeRegister('50h', 80))
+        self.write_51h.clicked.connect(lambda: self.writeRegister('51h', 81))
+        self.write_52h.clicked.connect(lambda: self.writeRegister('52h', 82))
+        self.write_53h.clicked.connect(lambda: self.writeRegister('53h', LSM6DS3_ACC_GYRO_FUNC_SRC))
+        self.write_58h.clicked.connect(lambda: self.writeRegister('58h', LSM6DS3_ACC_GYRO_TAP_CFG1))
+        self.write_59h.clicked.connect(lambda: self.writeRegister('59h', LSM6DS3_ACC_GYRO_TAP_THS_6D))
+        self.write_5Ah.clicked.connect(lambda: self.writeRegister('5Ah', 90))
+        self.write_5Bh.clicked.connect(lambda: self.writeRegister('5Bh', LSM6DS3_ACC_GYRO_WAKE_UP_THS))
+        self.write_5Ch.clicked.connect(lambda: self.writeRegister('5Ch', LSM6DS3_ACC_GYRO_WAKE_UP_DUR))
+        self.write_5Dh.clicked.connect(lambda: self.writeRegister('5Dh', LSM6DS3_ACC_GYRO_FREE_FALL))
+
+        # write buttons page3
+        self.write_02h.clicked.connect(lambda: self.writeRegister('02h', LSM6DS3_ACC_GYRO_SLV0_ADD))
+        self.write_03h.clicked.connect(lambda: self.writeRegister('03h', LSM6DS3_ACC_GYRO_SLV0_SUBADD))
+        self.write_04h_2.clicked.connect(lambda: self.writeRegister('04h_2', LSM6DS3_ACC_GYRO_SLAVE0_CONFIG))
+        self.write_05h_2.clicked.connect(lambda: self.writeRegister('05h_2', LSM6DS3_ACC_GYRO_SLV1_ADD))
+        self.write_06h_2.clicked.connect(lambda: self.writeRegister('06h', LSM6DS3_ACC_GYRO_SLV1_SUBADD))
+        self.write_07h_2.clicked.connect(lambda: self.writeRegister('07h_2', LSM6DS3_ACC_GYRO_SLAVE1_CONFIG))
+        self.write_08h_2.clicked.connect(lambda: self.writeRegister('08h_2', LSM6DS3_ACC_GYRO_SLV2_ADD))
+        self.write_09h_2.clicked.connect(lambda: self.writeRegister('09h_2', LSM6DS3_ACC_GYRO_SLV2_SUBADD))
+        self.write_0Ah_2.clicked.connect(lambda: self.writeRegister('0Ah_2', LSM6DS3_ACC_GYRO_SLAVE2_CONFIG))
+        self.write_0Bh_2.clicked.connect(lambda: self.writeRegister('0Bh_2', LSM6DS3_ACC_GYRO_SLV3_ADD))
+        self.rea_0Ch.clicked.connect(lambda: self.writeRegister('0Ch', LSM6DS3_ACC_GYRO_SLV3_SUBADD))
+        self.write_0Dh_2.clicked.connect(lambda: self.writeRegister('0Dh_2', LSM6DS3_ACC_GYRO_SLAVE3_CONFIG))
+        self.write_0Eh_2.clicked.connect(
+            lambda: self.writeRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
+        self.write_13h_2.clicked.connect(lambda: self.writeRegister('13h_2', LSM6DS3_ACC_GYRO_SM_STEP_THS))
+        self.write_15h_2.clicked.connect(lambda: self.writeRegister('15h_2', 21))
+        self.write_24h_2.clicked.connect(lambda: self.writeRegister('24h_2', LSM6DS3_ACC_GYRO_MAG_SI_XX))
+        self.write_25h_2.clicked.connect(lambda: self.writeRegister('25h_2', LSM6DS3_ACC_GYRO_MAG_SI_XY))
+        self.write_26h_2.clicked.connect(lambda: self.writeRegister('26h_2', LSM6DS3_ACC_GYRO_MAG_SI_XZ))
+        self.write_27h_2.clicked.connect(lambda: self.writeRegister('27h_2', LSM6DS3_ACC_GYRO_MAG_SI_YX))
+        self.write_28h_2.clicked.connect(lambda: self.writeRegister('28h_2', LSM6DS3_ACC_GYRO_MAG_SI_YY))
+        self.write_29h_2.clicked.connect(lambda: self.writeRegister('29h_2', LSM6DS3_ACC_GYRO_MAG_SI_YZ))
+        self.write_2Ah_2.clicked.connect(lambda: self.writeRegister('2Ah_2', LSM6DS3_ACC_GYRO_MAG_SI_ZX))
+        self.write_2Bh_2.clicked.connect(lambda: self.writeRegister('2Bh_2', LSM6DS3_ACC_GYRO_MAG_SI_ZY))
+        self.write_2Ch_2.clicked.connect(lambda: self.writeRegister('2Ch_2', LSM6DS3_ACC_GYRO_MAG_SI_ZZ))
+        self.write_2Dh_2.clicked.connect(lambda: self.writeRegister('2Dh_2', LSM6DS3_ACC_GYRO_MAG_OFFX_L))
+        self.write_2Eh_2.clicked.connect(lambda: self.writeRegister('2Eh_2', LSM6DS3_ACC_GYRO_MAG_OFFX_H))
+        self.write_2Fh_2.clicked.connect(lambda: self.writeRegister('2Fh_2', LSM6DS3_ACC_GYRO_MAG_OFFY_L))
+        self.write_30h_2.clicked.connect(lambda: self.writeRegister('30h_2', LSM6DS3_ACC_GYRO_MAG_OFFY_H))
+        self.write_31h_2.clicked.connect(lambda: self.writeRegister('31h_2', LSM6DS3_ACC_GYRO_MAG_OFFZ_L))
+        self.write_32h_2.clicked.connect(lambda: self.writeRegister('32h_2', LSM6DS3_ACC_GYRO_MAG_OFFZ_H))
+        self.write_5Eh.clicked.connect(lambda: self.writeRegister('5Eh', LSM6DS3_ACC_GYRO_MD1_CFG))
+        self.write_5Fh.clicked.connect(lambda: self.writeRegister('5Fh', LSM6DS3_ACC_GYRO_MD2_CFG))
+        self.write_66h.clicked.connect(lambda: self.writeRegister('66h', 66))
+        self.write_67h.clicked.connect(lambda: self.writeRegister('67h', 103))
+        self.write_68h.clicked.connect(lambda: self.writeRegister('68h', 104))
+        self.write_69h.clicked.connect(lambda: self.writeRegister('69h', 105))
+        self.write_6Ah.clicked.connect(lambda: self.writeRegister('6Ah', 106))
+        self.write_6Bh.clicked.connect(lambda: self.writeRegister('6Bh', 107))
 
         # read buttons
         self.read_01h.clicked.connect(lambda: self.readRegister('01h', LSM6DS3_ACC_GYRO_RAM_ACCESS))
@@ -4419,8 +4560,8 @@ class Ui_MainWindow(object):
         self.read_02h.clicked.connect(lambda: self.readRegister('02h', LSM6DS3_ACC_GYRO_SLV0_ADD))
         self.read_03h.clicked.connect(lambda: self.readRegister('03h', LSM6DS3_ACC_GYRO_SLV0_SUBADD))
         self.read_04h_2.clicked.connect(lambda: self.readRegister('04h_2', LSM6DS3_ACC_GYRO_SLAVE0_CONFIG))
-        self.read_05h_2h.clicke d.connect(lambda: self.readRegister('05h_2', LSM6DS3_ACC_GYRO_SLV1_ADD))
-        self.read_06h.clicked.connect(lambda: self.readRegister('06h', LSM6DS3_ACC_GYRO_SLV1_SUBADD))
+        self.read_05h_2.clicked.connect(lambda: self.readRegister('05h_2', LSM6DS3_ACC_GYRO_SLV1_ADD))
+        self.read_06h_2.clicked.connect(lambda: self.readRegister('06h', LSM6DS3_ACC_GYRO_SLV1_SUBADD))
         self.read_07h_2.clicked.connect(lambda: self.readRegister('07h_2', LSM6DS3_ACC_GYRO_SLAVE1_CONFIG))
         self.read_08h_2.clicked.connect(lambda: self.readRegister('08h_2', LSM6DS3_ACC_GYRO_SLV2_ADD))
         self.read_09h_2.clicked.connect(lambda: self.readRegister('09h_2', LSM6DS3_ACC_GYRO_SLV2_SUBADD))
@@ -4428,7 +4569,8 @@ class Ui_MainWindow(object):
         self.read_0Bh_2.clicked.connect(lambda: self.readRegister('0Bh_2', LSM6DS3_ACC_GYRO_SLV3_ADD))
         self.rea_0Ch.clicked.connect(lambda: self.readRegister('0Ch', LSM6DS3_ACC_GYRO_SLV3_SUBADD))
         self.read_0Dh_2.clicked.connect(lambda: self.readRegister('0Dh_2', LSM6DS3_ACC_GYRO_SLAVE3_CONFIG))
-        self.read_0Eh_2.clicked.connect(lambda: self.readRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
+        self.read_0Eh_2.clicked.connect(
+            lambda: self.readRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
         self.read_13h_2.clicked.connect(lambda: self.readRegister('13h_2', LSM6DS3_ACC_GYRO_SM_STEP_THS))
         self.read_15h_2.clicked.connect(lambda: self.readRegister('15h_2', 21))
         self.read_24h_2.clicked.connect(lambda: self.readRegister('24h_2', LSM6DS3_ACC_GYRO_MAG_SI_XX))
@@ -4454,7 +4596,6 @@ class Ui_MainWindow(object):
         self.read_69h.clicked.connect(lambda: self.readRegister('69h', 105))
         self.read_6Ah.clicked.connect(lambda: self.readRegister('6Ah', 106))
         self.read_6Bh.clicked.connect(lambda: self.readRegister('6Bh', 107))
-
 
         self.Tabs.setTabText(self.Tabs.indexOf(self.SensorSettingsTab),
                              _translate("MainWindow", "Sensor Settings", None))

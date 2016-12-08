@@ -1,11 +1,11 @@
 import smbus
 import time
-from LSM6DS3_Registers import *
 import configparser
+import csv
+from LSM6DS3_Registers import *
 from PyQt4 import QtCore, QtGui
 
 # initialize i2c connection through smbus
-# TODO: fix to be OOP
 bus = smbus.SMBus(1)
 
 
@@ -18,6 +18,7 @@ class LSM6DS3(object):
     """
 
     def __init__(self):
+        self.bus = smbus.SMBus(1)
 
         # parse config file for settings
         config = configparser.ConfigParser()
@@ -108,11 +109,11 @@ class LSM6DS3(object):
                            accelSampleRateDict[self.accelSampleRate]
 
         # setup control register 1
-        bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL1_XL, dataToWrite)
+        self.bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL1_XL, dataToWrite)
 
         # let bandwidth be determined by setting BW_XL[1:0] in CTRL1_XL (0x10)
         dataToWrite = LSM6DS3_ACC_GYRO_BW_SCAL_ODR_ENABLED
-        bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL4_C, dataToWrite)
+        self.bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL4_C, dataToWrite)
 
         # setup gyroscope settings
         dataToWrite = 0
@@ -134,12 +135,12 @@ class LSM6DS3(object):
                 208: LSM6DS3_ACC_GYRO_ODR_G_208Hz,
                 416: LSM6DS3_ACC_GYRO_ODR_G_416Hz,
                 833: LSM6DS3_ACC_GYRO_ODR_G_833Hz,
-                1660: LSM6DS3_ACC_GYRO_ODR_G_1660Hz,
+                1666: LSM6DS3_ACC_GYRO_ODR_G_1660Hz,
             }
 
             dataToWrite += gyroRangeDict[self.gyroRange] + gyroSampleRateDict[self.gyroSampleRate]
 
-        bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL2_G, dataToWrite)
+        self.bus.write_byte_data(self.address, LSM6DS3_ACC_GYRO_CTRL2_G, dataToWrite)
 
     """
     readAccelX
@@ -204,28 +205,6 @@ class LSM6DS3(object):
         return calculatedAccel
 
     """
-    printAccelXYZ
-    prints the acceleration force in all three axes (x, y, and z)
-
-    @param none
-    @return none
-    """
-
-    def printAccelXYZ(self):
-
-        # initial accelerometer calibration
-        xCalibration = self.readAccelX()
-        yCalibration = self.readAccelY()
-        zCalibration = self.readAccelZ()
-
-        while (True):
-            X = self.readAccelX() - xCalibration
-            Y = self.readAccelY() - yCalibration
-            Z = self.readAccelZ() - zCalibration
-            print("Accelerometer  X: " + str(X) + "  Y:  " + str(Y) + "  Z:  " + str(Z))
-            # time.sleep(0.2)
-
-    """
     readGyroX
     returns the angular rate of the x-axis
 
@@ -281,6 +260,81 @@ class LSM6DS3(object):
         return calcAngRate
 
     """
+    printAccelXYZ
+    prints the acceleration force in all three axes (x, y, and z)
+
+    @param none
+    @return none
+    """
+
+    def printAccelXYZ(self):
+        if (self.logToFile == 1):
+            self.printInProgress = 1
+            epoch = int(time.time())
+            curDateTime = time.strftime("%Y%m%d_%H%M%S")
+
+            with open('logs/' + str(curDateTime) + '_log.csv', 'a') as f:
+                w = csv.writer(f)
+
+                # initial accelerometer calibration
+                xCalibration = self.readAccelX()
+                yCalibration = self.readAccelY()
+                zCalibration = self.readAccelZ()
+
+                while (True):
+                    try:
+                        QtCore.QCoreApplication.processEvents()
+
+                        if (self.stopLog == 1):
+                            self.stopLog = 0
+                            self.printInProgress = 0
+                            print('[Logged Stopped]')
+                            break
+
+                        X = self.readAccelX() - xCalibration
+                        Y = self.readAccelY() - yCalibration
+                        Z = self.readAccelZ() - zCalibration
+
+                        if (self.logToTerminal == 1):
+                            print("Accelerometer  X: " + str(X) + "  Y:  " + str(Y) + "  Z:  " + str(Z))
+                        timestamp = time.strftime('%H:%M:%S')
+                        row = [timestamp, 'Accelerometer', X, Y, Z]
+                        w.writerow(row)
+
+                    except KeyboardInterrupt:
+                        print('[Logging stopped due to exception]')
+                        self.printInProgress = 0
+                        self.stopLog = 0
+                        break
+        else:
+            self.printInProgress = 1
+
+            # initial accelerometer calibration
+            xCalibration = self.readAccelX()
+            yCalibration = self.readAccelY()
+            zCalibration = self.readAccelZ()
+
+            while (True):
+                try:
+                    QtCore.QCoreApplication.processEvents()
+
+                    if (self.stopLog == 1):
+                        self.stopLog = 0
+                        self.printInProgress = 0
+                        print('[Logged Stopped]')
+                        break
+
+                    X = self.readAccelX() - xCalibration
+                    Y = self.readAccelY() - yCalibration
+                    Z = self.readAccelZ() - zCalibration
+                    print("Accelerometer  X: " + str(X) + "  Y:  " + str(Y) + "  Z:  " + str(Z))
+                except KeyboardInterrupt:
+                    print('[Logging stopped due to exception]')
+                    self.printInProgress = 0
+                    self.stopLog = 0
+                    break
+
+    """
     printGyroXYZ
     prints the angular rate of all axes
 
@@ -289,30 +343,167 @@ class LSM6DS3(object):
     """
 
     def printGyroXYZ(self):
-        self.printInProgress = 1
-        # initial gyroscope calibration
-        xCalibration = self.readGyroX()
-        yCalibration = self.readGyroY()
-        zCalibration = self.readGyroZ()
-        while (True):
-            try:
-                QtCore.QCoreApplication.processEvents()
+        if (self.logToFile == 1):
+            epoch = int(time.time())
+            curDateTime = time.strftime("%Y%m%d_%H%M%S")
 
-                if (self.stopLog == 1):
+            self.printInProgress = 1
+            with open('logs/' + str(curDateTime) + '_log.csv', 'a') as f:
+                w = csv.writer(f)
+                # initial gyroscope calibration
+                xCalibration = self.readGyroX()
+                yCalibration = self.readGyroY()
+                zCalibration = self.readGyroZ()
+                while (True):
+                    try:
+                        QtCore.QCoreApplication.processEvents()
+
+                        if (self.stopLog == 1):
+                            self.stopLog = 0
+                            self.printInProgress = 0
+                            print('[Logging Stopped]')
+                            break
+
+                        X = round(self.readGyroX() - xCalibration, 0)
+                        Y = round(self.readGyroY() - yCalibration, 0)
+                        Z = round(self.readGyroZ() - zCalibration, 0)
+
+                        if (self.logToTerminal == 1):
+                            print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
+                        timestamp = time.strftime('%H:%M:%S')
+                        row = [timestamp, 'Gyroscope', X, Y, Z]
+                        w.writerow(row)
+
+                    except KeyboardInterrupt:
+                        print('[Logging stopped due to exception]')
+                        self.stopLog = 0
+                        self.printInProgress = 0
+                        break
+        else:
+
+            self.printInProgress = 1
+            # initial gyroscope calibration
+            xCalibration = self.readGyroX()
+            yCalibration = self.readGyroY()
+            zCalibration = self.readGyroZ()
+            while (True):
+                try:
+                    QtCore.QCoreApplication.processEvents()
+
+                    if (self.stopLog == 1):
+                        self.stopLog = 0
+                        self.printInProgress = 0
+                        print('[Logging Stopped]')
+                        break
+
+                    X = round(self.readGyroX() - xCalibration, 0)
+                    Y = round(self.readGyroY() - yCalibration, 0)
+                    Z = round(self.readGyroZ() - zCalibration, 0)
+
+                    print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
+
+                except KeyboardInterrupt:
+                    print('[Logging stopped due to exception]')
                     self.stopLog = 0
                     self.printInProgress = 0
-                    print('[Logging Stopped]')
                     break
 
-                X = round(self.readGyroX() - xCalibration, 0)
-                Y = round(self.readGyroY() - yCalibration, 0)
-                Z = round(self.readGyroZ() - zCalibration, 0)
+    """
+    printComboXYZ
+    prints both accelerometer and gyroscope outputs
+    """
 
-                print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z))
+    def printComboXYZ(self):
+        if (self.logToFile == 1):
+            epoch = int(time.time())
+            curDateTime = time.strftime("%Y%m%d_%H%M%S")
 
-            except Exception:
-                print('[Logging Stopped due to Exception]')
-                break
+            # open unique csv file
+            with open('logs/' + str(curDateTime) + '_log.csv', 'a') as f:
+                w = csv.writer(f)
+                self.printInProgress = 1
+
+                # initial gyroscope calibration
+                xGyroCalibration = self.readGyroX()
+                yGyroCalibration = self.readGyroY()
+                zGyroCalibration = self.readGyroZ()
+
+                # initial accelerometer calibration
+                xAccCalibration = self.readAccelX()
+                yAccCalibration = self.readAccelY()
+                zAccCalibration = self.readAccelZ()
+
+                while (True):
+                    try:
+                        QtCore.QCoreApplication.processEvents()
+
+                        if (self.stopLog == 1):
+                            self.stopLog = 0
+                            self.printInProgress = 0
+                            print('[Logging Stopped]')
+                            break
+
+                        X = round(self.readGyroX() - xGyroCalibration, 0)
+                        Y = round(self.readGyroY() - yGyroCalibration, 0)
+                        Z = round(self.readGyroZ() - zGyroCalibration, 0)
+
+                        X2 = self.readAccelX() - xAccCalibration
+                        Y2 = self.readAccelY() - yAccCalibration
+                        Z2 = self.readAccelZ() - zAccCalibration
+
+                        if (self.logToTerminal == 1):
+                            print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z) +
+                                  "     Accelerometer X: " + str(X2) + " Y: " + str(Y2) + " Z: "
+                                  + str(Z2))
+                        timestamp = time.strftime('%H:%M:%S')
+                        row = [timestamp, 'Gyroscope: ', X, Y, Z, 'Accelerometer: ', X2, Y2, Z2]
+                        w.writerow(row)
+
+                    except KeyboardInterrupt:
+                        print('[Logging stopped due to exception]')
+                        self.stopLog = 0
+                        self.printInProgress = 0
+                        break
+        else:
+            self.printInProgress = 1
+
+            # initial gyroscope calibration
+            xGyroCalibration = self.readGyroX()
+            yGyroCalibration = self.readGyroY()
+            zGyroCalibration = self.readGyroZ()
+
+            # initial accelerometer calibration
+            xAccCalibration = self.readAccelX()
+            yAccCalibration = self.readAccelY()
+            zAccCalibration = self.readAccelZ()
+
+            while (True):
+                try:
+                    QtCore.QCoreApplication.processEvents()
+
+                    if (self.stopLog == 1):
+                        self.stopLog = 0
+                        self.printInProgress = 0
+                        print('[Logging Stopped]')
+                        break
+
+                    X = round(self.readGyroX() - xGyroCalibration, 0)
+                    Y = round(self.readGyroY() - yGyroCalibration, 0)
+                    Z = round(self.readGyroZ() - zGyroCalibration, 0)
+
+                    X2 = self.readAccelX() - xAccCalibration
+                    Y2 = self.readAccelY() - yAccCalibration
+                    Z2 = self.readAccelZ() - zAccCalibration
+
+                    print("Gyroscope X: " + str(X) + " Y: " + str(Y) + " Z: " + str(Z) +
+                          "     Accelerometer X: " + str(X2) + " Y: " + str(Y2) + " Z: "
+                          + str(Z2))
+
+                except KeyboardInterrupt:
+                    print('[Logging stopped due to exception]')
+                    self.stopLog = 0
+                    self.printInProgress = 0
+                    break
 
     """
     readRegisterInt16
@@ -323,10 +514,7 @@ class LSM6DS3(object):
     """
 
     def readRegisterInt16(self, register):
-        try:
-            bytes = bus.read_i2c_block_data(self.address, register, 2)
-        except IOError:
-            bytes = bus.read_i2c_block_data(0x6b, register, 2)
+        bytes = self.bus.read_i2c_block_data(self.address, register, 2)
 
         # turn read 8 bit register blocks into 16 bit 2s complement word
         output = bytes[0] | (bytes[1] << 8)
@@ -336,8 +524,3 @@ class LSM6DS3(object):
             output = output - (1 << 16)
 
         return output
-
-# test = LSM6DS3()
-# test.begin()
-# test.printGyroXYZ()
-# test.printAccelXYZ()
