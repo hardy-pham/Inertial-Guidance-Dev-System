@@ -1,7 +1,8 @@
-from PyQt4 import QtCore, QtGui
-from LSM6DS3 import *
 import subprocess, sys
 import configparser
+from PySide import QtCore, QtGui
+from LSM6DS3 import *
+from LSM6DS3_Registers import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -1270,14 +1271,14 @@ class Ui_MainWindow(object):
         self.text_08h.setFont(font)
         self.text_08h.setReadOnly(False)
         self.text_08h.setObjectName(_fromUtf8("text_08h"))
-        self.text06h = QtGui.QLineEdit(self.Register1Tab)
-        self.text06h.setGeometry(QtCore.QRect(310, 100, 60, 16))
+        self.text_06h_1 = QtGui.QLineEdit(self.Register1Tab)
+        self.text_06h_1.setGeometry(QtCore.QRect(310, 100, 60, 16))
         font = QtGui.QFont()
         font.setPointSize(7)
         font.setKerning(True)
-        self.text06h.setFont(font)
-        self.text06h.setReadOnly(False)
-        self.text06h.setObjectName(_fromUtf8("text06h"))
+        self.text_06h_1.setFont(font)
+        self.text_06h_1.setReadOnly(False)
+        self.text_06h_1.setObjectName(_fromUtf8("text_06h_1"))
         self.text_07h = QtGui.QLineEdit(self.Register1Tab)
         self.text_07h.setGeometry(QtCore.QRect(310, 120, 60, 16))
         font = QtGui.QFont()
@@ -1389,7 +1390,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_16h.setFont(font)
 
-
         self.text_16h.setReadOnly(False)
         self.text_16h.setObjectName(_fromUtf8("text_16h"))
         self.text_18h = QtGui.QLineEdit(self.Register1Tab)
@@ -1398,7 +1398,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_18h.setFont(font)
-
 
         self.text_18h.setReadOnly(False)
         self.text_18h.setObjectName(_fromUtf8("text_18h"))
@@ -1409,7 +1408,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_19h.setFont(font)
 
-
         self.text_19h.setReadOnly(False)
         self.text_19h.setObjectName(_fromUtf8("text_19h"))
         self.text_1Ah = QtGui.QLineEdit(self.Register1Tab)
@@ -1418,7 +1416,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_1Ah.setFont(font)
-
 
         self.text_1Ah.setReadOnly(False)
         self.text_1Ah.setObjectName(_fromUtf8("text_1Ah"))
@@ -1429,7 +1426,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_17h.setFont(font)
 
-
         self.text_17h.setReadOnly(False)
         self.text_17h.setObjectName(_fromUtf8("text_17h"))
         self.text_1Dh = QtGui.QLineEdit(self.Register1Tab)
@@ -1438,7 +1434,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_1Dh.setFont(font)
-
 
         self.text_1Dh.setReadOnly(False)
         self.text_1Dh.setObjectName(_fromUtf8("text_1Dh"))
@@ -1449,26 +1444,23 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_1Eh.setFont(font)
 
-
         self.text_1Eh.setReadOnly(False)
         self.text_1Eh.setObjectName(_fromUtf8("text_1Eh"))
-        self.text_01h_2 = QtGui.QLineEdit(self.Register1Tab)
-        self.text_01h_2.setGeometry(QtCore.QRect(680, 40, 60, 16))
+        self.text_1Bh = QtGui.QLineEdit(self.Register1Tab)
+        self.text_1Bh.setGeometry(QtCore.QRect(680, 40, 60, 16))
         font = QtGui.QFont()
         font.setPointSize(7)
         font.setKerning(True)
-        self.text_01h_2.setFont(font)
+        self.text_1Bh.setFont(font)
 
-
-        self.text_01h_2.setReadOnly(False)
-        self.text_01h_2.setObjectName(_fromUtf8("text_01h_2"))
+        self.text_1Bh.setReadOnly(False)
+        self.text_1Bh.setObjectName(_fromUtf8("text_1Bh"))
         self.text_1Ch = QtGui.QLineEdit(self.Register1Tab)
         self.text_1Ch.setGeometry(QtCore.QRect(680, 60, 60, 16))
         font = QtGui.QFont()
         font.setPointSize(7)
         font.setKerning(True)
         self.text_1Ch.setFont(font)
-
 
         self.text_1Ch.setReadOnly(False)
         self.text_1Ch.setObjectName(_fromUtf8("text_1Ch"))
@@ -1479,7 +1471,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_21h.setFont(font)
 
-
         self.text_21h.setReadOnly(False)
         self.text_21h.setObjectName(_fromUtf8("text_21h"))
         self.text_20h = QtGui.QLineEdit(self.Register1Tab)
@@ -1488,7 +1479,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_20h.setFont(font)
-
 
         self.text_20h.setReadOnly(False)
         self.text_20h.setObjectName(_fromUtf8("text_20h"))
@@ -1499,7 +1489,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_24h.setFont(font)
 
-
         self.text_24h.setReadOnly(False)
         self.text_24h.setObjectName(_fromUtf8("text_24h"))
         self.text_26h = QtGui.QLineEdit(self.Register1Tab)
@@ -1508,7 +1497,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_26h.setFont(font)
-
 
         self.text_26h.setReadOnly(False)
         self.text_26h.setObjectName(_fromUtf8("text_26h"))
@@ -1519,7 +1507,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_27h.setFont(font)
 
-
         self.text_27h.setReadOnly(False)
         self.text_27h.setObjectName(_fromUtf8("text_27h"))
         self.text_23h = QtGui.QLineEdit(self.Register1Tab)
@@ -1528,7 +1515,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_23h.setFont(font)
-
 
         self.text_23h.setReadOnly(False)
         self.text_23h.setObjectName(_fromUtf8("text_23h"))
@@ -1539,7 +1525,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_25h.setFont(font)
 
-
         self.text_25h.setReadOnly(False)
         self.text_25h.setObjectName(_fromUtf8("text_25h"))
         self.text_22h = QtGui.QLineEdit(self.Register1Tab)
@@ -1548,7 +1533,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_22h.setFont(font)
-
 
         self.text_22h.setReadOnly(False)
         self.text_22h.setObjectName(_fromUtf8("text_22h"))
@@ -1559,7 +1543,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_28h.setFont(font)
 
-
         self.text_28h.setReadOnly(False)
         self.text_28h.setObjectName(_fromUtf8("text_28h"))
         self.text_2Dh = QtGui.QLineEdit(self.Register1Tab)
@@ -1568,7 +1551,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_2Dh.setFont(font)
-
 
         self.text_2Dh.setReadOnly(False)
         self.text_2Dh.setObjectName(_fromUtf8("text_2Dh"))
@@ -1579,7 +1561,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_2Bh.setFont(font)
 
-
         self.text_2Bh.setReadOnly(False)
         self.text_2Bh.setObjectName(_fromUtf8("text_2Bh"))
         self.text_29h = QtGui.QLineEdit(self.Register1Tab)
@@ -1588,7 +1569,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_29h.setFont(font)
-
 
         self.text_29h.setReadOnly(False)
         self.text_29h.setObjectName(_fromUtf8("text_29h"))
@@ -1599,7 +1579,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_2Ch.setFont(font)
 
-
         self.text_2Ch.setReadOnly(False)
         self.text_2Ch.setObjectName(_fromUtf8("text_2Ch"))
         self.text_2Ah = QtGui.QLineEdit(self.Register1Tab)
@@ -1608,7 +1587,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_2Ah.setFont(font)
-
 
         self.text_2Ah.setReadOnly(False)
         self.text_2Ah.setObjectName(_fromUtf8("text_2Ah"))
@@ -1633,7 +1611,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_53h.setFont(font)
 
-
         self.text_53h.setReadOnly(False)
         self.text_53h.setObjectName(_fromUtf8("text_53h"))
         self.write_3Dh = QtGui.QPushButton(self.Register2Tab)
@@ -1647,7 +1624,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_3Eh.setFont(font)
-
 
         self.text_3Eh.setReadOnly(False)
         self.text_3Eh.setObjectName(_fromUtf8("text_3Eh"))
@@ -1668,7 +1644,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_4Ah.setFont(font)
-
 
         self.text_4Ah.setReadOnly(False)
         self.text_4Ah.setObjectName(_fromUtf8("text_4Ah"))
@@ -1708,7 +1683,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_5Ch.setFont(font)
 
-
         self.text_5Ch.setReadOnly(False)
         self.text_5Ch.setObjectName(_fromUtf8("text_5Ch"))
         self.text_3Fh = QtGui.QLineEdit(self.Register2Tab)
@@ -1716,7 +1690,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_3Fh.setFont(font)
-
 
         self.text_3Fh.setReadOnly(False)
         self.text_3Fh.setObjectName(_fromUtf8("text_3Fh"))
@@ -1918,7 +1891,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_4Bh.setFont(font)
 
-
         self.text_4Bh.setReadOnly(False)
         self.text_4Bh.setObjectName(_fromUtf8("text_4Bh"))
         self.label_35 = QtGui.QLabel(self.Register2Tab)
@@ -1939,7 +1911,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_5Ah.setFont(font)
 
-
         self.text_5Ah.setReadOnly(False)
         self.text_5Ah.setObjectName(_fromUtf8("text_5Ah"))
         self.text_5Bh = QtGui.QLineEdit(self.Register2Tab)
@@ -1947,7 +1918,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_5Bh.setFont(font)
-
 
         self.text_5Bh.setReadOnly(False)
         self.text_5Bh.setObjectName(_fromUtf8("text_5Bh"))
@@ -1962,7 +1932,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_42h.setFont(font)
-
 
         self.text_42h.setReadOnly(False)
         self.text_42h.setObjectName(_fromUtf8("text_42h"))
@@ -2062,7 +2031,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_59h.setFont(font)
 
-
         self.text_59h.setReadOnly(False)
         self.text_59h.setObjectName(_fromUtf8("text_59h"))
         self.read_49h = QtGui.QPushButton(self.Register2Tab)
@@ -2131,7 +2099,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_4Ch.setFont(font)
 
-
         self.text_4Ch.setReadOnly(False)
         self.text_4Ch.setObjectName(_fromUtf8("text_4Ch"))
         self.text_3Bh = QtGui.QLineEdit(self.Register2Tab)
@@ -2139,7 +2106,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_3Bh.setFont(font)
-
 
         self.text_3Bh.setReadOnly(False)
         self.text_3Bh.setObjectName(_fromUtf8("text_3Bh"))
@@ -2160,7 +2126,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_3Dh.setFont(font)
-
 
         self.text_3Dh.setReadOnly(False)
         self.text_3Dh.setObjectName(_fromUtf8("text_3Dh"))
@@ -2200,7 +2165,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_4Fh.setFont(font)
 
-
         self.text_4Fh.setReadOnly(False)
         self.text_4Fh.setObjectName(_fromUtf8("text_4Fh"))
         self.text_58h = QtGui.QLineEdit(self.Register2Tab)
@@ -2208,7 +2172,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_58h.setFont(font)
-
 
         self.text_58h.setReadOnly(False)
         self.text_58h.setObjectName(_fromUtf8("text_58h"))
@@ -2229,7 +2192,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_52h.setFont(font)
-
 
         self.text_52h.setReadOnly(False)
         self.text_52h.setObjectName(_fromUtf8("text_52h"))
@@ -2262,7 +2224,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_49h.setFont(font)
-
 
         self.text_49h.setReadOnly(False)
         self.text_49h.setObjectName(_fromUtf8("text_49h"))
@@ -2374,7 +2335,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_5Dh.setFont(font)
 
-
         self.text_5Dh.setReadOnly(False)
         self.text_5Dh.setObjectName(_fromUtf8("text_5Dh"))
         self.text_3Ch = QtGui.QLineEdit(self.Register2Tab)
@@ -2382,7 +2342,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_3Ch.setFont(font)
-
 
         self.text_3Ch.setReadOnly(False)
         self.text_3Ch.setObjectName(_fromUtf8("text_3Ch"))
@@ -2470,7 +2429,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_40h.setFont(font)
 
-
         self.text_40h.setReadOnly(False)
         self.text_40h.setObjectName(_fromUtf8("text_40h"))
         self.label_61 = QtGui.QLabel(self.Register2Tab)
@@ -2503,7 +2461,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_3Ah.setFont(font)
 
-
         self.text_3Ah.setObjectName(_fromUtf8("text_3Ah"))
         self.label_64 = QtGui.QLabel(self.Register2Tab)
         self.label_64.setGeometry(QtCore.QRect(260, 120, 60, 16))
@@ -2516,7 +2473,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_4Dh.setFont(font)
-
 
         self.text_4Dh.setReadOnly(False)
         self.text_4Dh.setObjectName(_fromUtf8("text_4Dh"))
@@ -2550,7 +2506,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_51h.setFont(font)
 
-
         self.text_51h.setReadOnly(False)
         self.text_51h.setObjectName(_fromUtf8("text_51h"))
         self.text_41h = QtGui.QLineEdit(self.Register2Tab)
@@ -2558,7 +2513,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_41h.setFont(font)
-
 
         self.text_41h.setReadOnly(False)
         self.text_41h.setObjectName(_fromUtf8("text_41h"))
@@ -2670,7 +2624,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_4Eh.setFont(font)
 
-
         self.text_4Eh.setReadOnly(False)
         self.text_4Eh.setObjectName(_fromUtf8("text_4Eh"))
         self.label_94 = QtGui.QLabel(self.Register2Tab)
@@ -2690,7 +2643,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_50h.setFont(font)
-
 
         self.text_50h.setReadOnly(False)
         self.text_50h.setObjectName(_fromUtf8("text_50h"))
@@ -2767,7 +2719,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_2Eh.setFont(font)
 
-
         self.text_2Eh.setReadOnly(False)
         self.text_2Eh.setObjectName(_fromUtf8("text_2Eh"))
         self.text_33h = QtGui.QLineEdit(self.Register2Tab)
@@ -2776,7 +2727,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_33h.setFont(font)
-
 
         self.text_33h.setReadOnly(False)
         self.text_33h.setObjectName(_fromUtf8("text_33h"))
@@ -2787,7 +2737,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_37h.setFont(font)
 
-
         self.text_37h.setReadOnly(False)
         self.text_37h.setObjectName(_fromUtf8("text_37h"))
         self.text_31h = QtGui.QLineEdit(self.Register2Tab)
@@ -2796,7 +2745,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_31h.setFont(font)
-
 
         self.text_31h.setReadOnly(False)
         self.text_31h.setObjectName(_fromUtf8("text_31h"))
@@ -2807,7 +2755,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_36h.setFont(font)
 
-
         self.text_36h.setReadOnly(False)
         self.text_36h.setObjectName(_fromUtf8("text_36h"))
         self.text_39h = QtGui.QLineEdit(self.Register2Tab)
@@ -2816,7 +2763,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_39h.setFont(font)
-
 
         self.text_39h.setReadOnly(False)
         self.text_39h.setObjectName(_fromUtf8("text_39h"))
@@ -2827,7 +2773,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_38h.setFont(font)
 
-
         self.text_38h.setReadOnly(False)
         self.text_38h.setObjectName(_fromUtf8("text_38h"))
         self.text_34h = QtGui.QLineEdit(self.Register2Tab)
@@ -2836,7 +2781,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_34h.setFont(font)
-
 
         self.text_34h.setReadOnly(False)
         self.text_34h.setObjectName(_fromUtf8("text_34h"))
@@ -2847,7 +2791,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_2Fh.setFont(font)
 
-
         self.text_2Fh.setReadOnly(False)
         self.text_2Fh.setObjectName(_fromUtf8("text_2Fh"))
         self.text_32h = QtGui.QLineEdit(self.Register2Tab)
@@ -2856,7 +2799,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_32h.setFont(font)
-
 
         self.text_32h.setReadOnly(False)
         self.text_32h.setObjectName(_fromUtf8("text_32h"))
@@ -2867,7 +2809,6 @@ class Ui_MainWindow(object):
         font.setKerning(True)
         self.text_30h.setFont(font)
 
-
         self.text_30h.setReadOnly(False)
         self.text_30h.setObjectName(_fromUtf8("text_30h"))
         self.text_35h = QtGui.QLineEdit(self.Register2Tab)
@@ -2876,7 +2817,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         font.setKerning(True)
         self.text_35h.setFont(font)
-
 
         self.text_35h.setReadOnly(False)
         self.text_35h.setObjectName(_fromUtf8("text_35h"))
@@ -2919,7 +2859,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_69h.setFont(font)
 
-
         self.text_69h.setReadOnly(False)
         self.text_69h.setObjectName(_fromUtf8("text_69h"))
         self.read_2Eh_2 = QtGui.QPushButton(self.RegisterTab3)
@@ -2946,7 +2885,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_67h.setFont(font)
 
-
         self.text_67h.setReadOnly(False)
         self.text_67h.setObjectName(_fromUtf8("text_67h"))
         self.label_102 = QtGui.QLabel(self.RegisterTab3)
@@ -2972,7 +2910,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_06h.setFont(font)
-
 
         self.text_06h.setReadOnly(False)
         self.text_06h.setObjectName(_fromUtf8("text_06h"))
@@ -3012,7 +2949,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_30h_2.setFont(font)
 
-
         self.text_30h_2.setReadOnly(False)
         self.text_30h_2.setObjectName(_fromUtf8("text_30h_2"))
         self.write_06h_2 = QtGui.QPushButton(self.RegisterTab3)
@@ -3038,7 +2974,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_2Bh_2.setFont(font)
-
 
         self.text_2Bh_2.setReadOnly(False)
         self.text_2Bh_2.setObjectName(_fromUtf8("text_2Bh_2"))
@@ -3078,7 +3013,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_25h_2.setFont(font)
 
-
         self.text_25h_2.setReadOnly(False)
         self.text_25h_2.setObjectName(_fromUtf8("text_25h_2"))
         self.label_113 = QtGui.QLabel(self.RegisterTab3)
@@ -3098,7 +3032,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_2Dh_2.setFont(font)
-
 
         self.text_2Dh_2.setReadOnly(False)
         self.text_2Dh_2.setObjectName(_fromUtf8("text_2Dh_2"))
@@ -3168,7 +3101,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_2Ch_2.setFont(font)
 
-
         self.text_2Ch_2.setReadOnly(False)
         self.text_2Ch_2.setObjectName(_fromUtf8("text_2Ch_2"))
         self.write_2Ch_2 = QtGui.QPushButton(self.RegisterTab3)
@@ -3188,7 +3120,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_68h.setFont(font)
-
 
         self.text_68h.setReadOnly(False)
         self.text_68h.setObjectName(_fromUtf8("text_68h"))
@@ -3234,7 +3165,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_03h.setFont(font)
 
-
         self.text_03h.setReadOnly(False)
         self.text_03h.setObjectName(_fromUtf8("text_03h"))
         self.label_144 = QtGui.QLabel(self.RegisterTab3)
@@ -3248,7 +3178,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_2Eh_2.setFont(font)
-
 
         self.text_2Eh_2.setReadOnly(False)
         self.text_2Eh_2.setObjectName(_fromUtf8("text_2Eh_2"))
@@ -3270,7 +3199,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_2Ah_2.setFont(font)
 
-
         self.text_2Ah_2.setReadOnly(False)
         self.text_2Ah_2.setObjectName(_fromUtf8("text_2Ah_2"))
         self.label_111 = QtGui.QLabel(self.RegisterTab3)
@@ -3290,7 +3218,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_27h_2.setFont(font)
-
 
         self.text_27h_2.setReadOnly(False)
         self.text_27h_2.setObjectName(_fromUtf8("text_27h_2"))
@@ -3323,7 +3250,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_0Eh_2.setFont(font)
-
 
         self.text_0Eh_2.setReadOnly(False)
         self.text_0Eh_2.setObjectName(_fromUtf8("text_0Eh_2"))
@@ -3417,7 +3343,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_13h_2.setFont(font)
 
-
         self.text_13h_2.setReadOnly(False)
         self.text_13h_2.setObjectName(_fromUtf8("text_13h_2"))
         self.label_142 = QtGui.QLabel(self.RegisterTab3)
@@ -3432,7 +3357,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_09h_2.setFont(font)
 
-
         self.text_09h_2.setReadOnly(False)
         self.text_09h_2.setObjectName(_fromUtf8("text_09h_2"))
         self.read_30h_2 = QtGui.QPushButton(self.RegisterTab3)
@@ -3446,7 +3370,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_0Ch.setFont(font)
-
 
         self.text_0Ch.setReadOnly(False)
         self.text_0Ch.setObjectName(_fromUtf8("text_0Ch"))
@@ -3468,7 +3391,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_5Eh.setFont(font)
 
-
         self.text_5Eh.setReadOnly(False)
         self.text_5Eh.setObjectName(_fromUtf8("text_5Eh"))
         self.write_68h = QtGui.QPushButton(self.RegisterTab3)
@@ -3489,7 +3411,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_29h_2.setFont(font)
 
-
         self.text_29h_2.setReadOnly(False)
         self.text_29h_2.setObjectName(_fromUtf8("text_29h_2"))
         self.text_5Fh = QtGui.QLineEdit(self.RegisterTab3)
@@ -3497,7 +3418,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_5Fh.setFont(font)
-
 
         self.text_5Fh.setReadOnly(False)
         self.text_5Fh.setObjectName(_fromUtf8("text_5Fh"))
@@ -3507,7 +3427,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_2Fh_2.setFont(font)
 
-
         self.text_2Fh_2.setReadOnly(False)
         self.text_2Fh_2.setObjectName(_fromUtf8("text_2Fh_2"))
         self.text_0Dh_2 = QtGui.QLineEdit(self.RegisterTab3)
@@ -3515,7 +3434,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_0Dh_2.setFont(font)
-
 
         self.text_0Dh_2.setReadOnly(False)
         self.text_0Dh_2.setObjectName(_fromUtf8("text_0Dh_2"))
@@ -3530,7 +3448,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_24h_2.setFont(font)
-
 
         self.text_24h_2.setReadOnly(False)
         self.text_24h_2.setObjectName(_fromUtf8("text_24h_2"))
@@ -3588,7 +3505,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_6Bh.setFont(font)
 
-
         self.text_6Bh.setReadOnly(False)
         self.text_6Bh.setObjectName(_fromUtf8("text_6Bh"))
         self.label_131 = QtGui.QLabel(self.RegisterTab3)
@@ -3626,7 +3542,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_15h_2.setFont(font)
-
 
         self.text_15h_2.setReadOnly(False)
         self.text_15h_2.setObjectName(_fromUtf8("text_15h_2"))
@@ -3678,7 +3593,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_04h_2.setFont(font)
 
-
         self.text_04h_2.setReadOnly(False)
         self.text_04h_2.setObjectName(_fromUtf8("text_04h_2"))
         self.write_6Ah = QtGui.QPushButton(self.RegisterTab3)
@@ -3698,7 +3612,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_6Ah.setFont(font)
-
 
         self.text_6Ah.setReadOnly(False)
         self.text_6Ah.setObjectName(_fromUtf8("text_6Ah"))
@@ -3737,7 +3650,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_26h_2.setFont(font)
-
 
         self.text_26h_2.setReadOnly(False)
         self.text_26h_2.setObjectName(_fromUtf8("text_26h_2"))
@@ -3825,7 +3737,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_0Bh_2.setFont(font)
 
-
         self.text_0Bh_2.setReadOnly(False)
         self.text_0Bh_2.setObjectName(_fromUtf8("text_0Bh_2"))
         self.label_127 = QtGui.QLabel(self.RegisterTab3)
@@ -3845,7 +3756,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_0Ah_2.setFont(font)
-
 
         self.text_0Ah_2.setReadOnly(False)
         self.text_0Ah_2.setObjectName(_fromUtf8("text_0Ah_2"))
@@ -3867,7 +3777,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_66h.setFont(font)
 
-
         self.text_66h.setReadOnly(False)
         self.text_66h.setObjectName(_fromUtf8("text_66h"))
         self.text_08h_2 = QtGui.QLineEdit(self.RegisterTab3)
@@ -3875,7 +3784,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_08h_2.setFont(font)
-
 
         self.text_08h_2.setReadOnly(False)
         self.text_08h_2.setObjectName(_fromUtf8("text_08h_2"))
@@ -3993,7 +3901,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_31h_2.setFont(font)
 
-
         self.text_31h_2.setReadOnly(False)
         self.text_31h_2.setObjectName(_fromUtf8("text_31h_2"))
         self.write_27h_2 = QtGui.QPushButton(self.RegisterTab3)
@@ -4032,7 +3939,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_02h.setFont(font)
 
-
         self.text_02h.setReadOnly(False)
         self.text_02h.setObjectName(_fromUtf8("text_02h"))
         self.text_05h_2 = QtGui.QLineEdit(self.RegisterTab3)
@@ -4040,7 +3946,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_05h_2.setFont(font)
-
 
         self.text_05h_2.setReadOnly(False)
         self.text_05h_2.setObjectName(_fromUtf8("text_05h_2"))
@@ -4055,7 +3960,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_28h_2.setFont(font)
-
 
         self.text_28h_2.setReadOnly(False)
         self.text_28h_2.setObjectName(_fromUtf8("text_28h_2"))
@@ -4089,7 +3993,6 @@ class Ui_MainWindow(object):
         font.setPointSize(7)
         self.text_32h_2.setFont(font)
 
-
         self.text_32h_2.setReadOnly(False)
         self.text_32h_2.setObjectName(_fromUtf8("text_32h_2"))
         self.label_173 = QtGui.QLabel(self.RegisterTab3)
@@ -4115,7 +4018,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.text_07h_2.setFont(font)
-
 
         self.text_07h_2.setReadOnly(False)
         self.text_07h_2.setObjectName(_fromUtf8("text_07h_2"))
@@ -4265,22 +4167,30 @@ class Ui_MainWindow(object):
         eval(setDefaultAccelBandwidth)
         eval(setDefaultAccelODR)
 
+    # applies the default settings from config file using configparser
     def applyDefault(self):
         with open('LSM6DS3settings.ini', 'w') as configfile:
             self.config.write(configfile)
         print('New default settings have been saved.')
 
-    def testRead(self):
-        # self.text_01h.setPlainText('changed')
-        testVar = self.text_01h.text()
-        print(testVar)
+    # converts decimal number to an 8 bit binary number with the structure of ########
+    def displayBinary(self, decimal):
+        binary = bin(decimal)
+        return binary
+
+    # reads the contents of the designated register
+    def readRegister(self, translate, registerAddress):
+        print('Reg address: ' + str(registerAddress))
+
+        registerContent = self.LSM6DS3.readRegisterInt16(registerAddress)
+        eightBitDisplay = self.displayBinary(registerContent)
+        displayContent = 'self.text_' + str(translate) + ".setText('" + str(eightBitDisplay) + "')"
+        print('Contents of address: ' + str(eightBitDisplay))
+        eval(displayContent)
 
     def retranslateUi(self, MainWindow):
         self.setDefaults()
 
-        self.text_01h.setText('test')
-
-        # self.text_01h.setPlainText('testing')
         MainWindow.setWindowTitle(_translate("MainWindow", "LSM6DS3 Control Panel", None))
         self.gyroRange125.setText(_translate("MainWindow", "125", None))
         self.gyroRange245.setText(_translate("MainWindow", "245", None))
@@ -4422,8 +4332,129 @@ class Ui_MainWindow(object):
         self.pushButton_Stop_2.clicked.connect(
             lambda: subprocess.call(["xdg-open", '/home/pi/Desktop/LSM6DS3datasheet.pdf']))
 
-        # test read button
-        self.read_01h.clicked.connect(lambda: self.testRead())
+        # read buttons
+        self.read_01h.clicked.connect(lambda: self.readRegister('01h', LSM6DS3_ACC_GYRO_RAM_ACCESS))
+        self.read_04h.clicked.connect(lambda: self.readRegister('04h', LSM6DS3_ACC_GYRO_SENSOR_SYNC_TIME))
+        self.read_05h_1.clicked.connect(lambda: self.readRegister('05h', LSM6DS3_ACC_GYRO_SENSOR_SYNC_EN))
+        self.read_06h.clicked.connect(lambda: self.readRegister('06h_1', LSM6DS3_ACC_GYRO_FIFO_CTRL1))
+        self.read_07h.clicked.connect(lambda: self.readRegister('07h', LSM6DS3_ACC_GYRO_FIFO_CTRL2))
+        self.read_08h.clicked.connect(lambda: self.readRegister('08h', LSM6DS3_ACC_GYRO_FIFO_CTRL3))
+        self.read_09h.clicked.connect(lambda: self.readRegister('09h', LSM6DS3_ACC_GYRO_FIFO_CTRL4))
+        self.read_0Ah.clicked.connect(lambda: self.readRegister('0Ah', LSM6DS3_ACC_GYRO_FIFO_CTRL5))
+        self.read_0Bh.clicked.connect(lambda: self.readRegister('0Bh', LSM6DS3_ACC_GYRO_ORIENT_CFG_G))
+        self.read_0Dh.clicked.connect(lambda: self.readRegister('0Dh', LSM6DS3_ACC_GYRO_INT1_CTRL))
+        self.read_0Eh.clicked.connect(lambda: self.readRegister('0Eh', LSM6DS3_ACC_GYRO_INT2_CTRL))
+        self.read_0Fh.clicked.connect(lambda: self.readRegister('0Fh', LSM6DS3_ACC_GYRO_WHO_AM_I_REG))
+        self.read_10h.clicked.connect(lambda: self.readRegister('10h', LSM6DS3_ACC_GYRO_CTRL1_XL))
+        self.read_11h.clicked.connect(lambda: self.readRegister('11h', LSM6DS3_ACC_GYRO_CTRL2_G))
+        self.read_12h.clicked.connect(lambda: self.readRegister('12h', LSM6DS3_ACC_GYRO_CTRL3_C))
+        self.read_13h.clicked.connect(lambda: self.readRegister('13h', LSM6DS3_ACC_GYRO_CTRL4_C))
+        self.read_14h.clicked.connect(lambda: self.readRegister('14h', LSM6DS3_ACC_GYRO_CTRL5_C))
+        self.read_15h.clicked.connect(lambda: self.readRegister('15h', LSM6DS3_ACC_GYRO_CTRL6_G))
+        self.read_16h.clicked.connect(lambda: self.readRegister('16h', LSM6DS3_ACC_GYRO_CTRL7_G))
+        self.read_17h.clicked.connect(lambda: self.readRegister('17h', LSM6DS3_ACC_GYRO_CTRL8_XL))
+        self.read_18h.clicked.connect(lambda: self.readRegister('18h', LSM6DS3_ACC_GYRO_CTRL9_XL))
+        self.read_19h.clicked.connect(lambda: self.readRegister('19h', LSM6DS3_ACC_GYRO_CTRL10_C))
+        self.read_1Ah.clicked.connect(lambda: self.readRegister('1Ah', LSM6DS3_ACC_GYRO_MASTER_CONFIG))
+        self.read_1Bh.clicked.connect(lambda: self.readRegister('1Bh', LSM6DS3_ACC_GYRO_WAKE_UP_SRC))
+        self.read_1Ch.clicked.connect(lambda: self.readRegister('1Ch', LSM6DS3_ACC_GYRO_TAP_SRC))
+        self.read_1Dh.clicked.connect(lambda: self.readRegister('1Dh', LSM6DS3_ACC_GYRO_D6D_SRC))
+        self.read_1Eh.clicked.connect(lambda: self.readRegister('1Eh', LSM6DS3_ACC_GYRO_STATUS_REG))
+        self.read_20h.clicked.connect(lambda: self.readRegister('20h', LSM6DS3_ACC_GYRO_OUT_TEMP_L))
+        self.read_21h.clicked.connect(lambda: self.readRegister('21h', LSM6DS3_ACC_GYRO_OUT_TEMP_H))
+        self.read_22h.clicked.connect(lambda: self.readRegister('22h', LSM6DS3_ACC_GYRO_OUTX_L_G))
+        self.read_23h.clicked.connect(lambda: self.readRegister('23h', LSM6DS3_ACC_GYRO_OUTX_H_G))
+        self.read_24h.clicked.connect(lambda: self.readRegister('24h', LSM6DS3_ACC_GYRO_OUTY_L_G))
+        self.read_25h.clicked.connect(lambda: self.readRegister('25h', LSM6DS3_ACC_GYRO_OUTY_H_G))
+        self.read_26h.clicked.connect(lambda: self.readRegister('26h', LSM6DS3_ACC_GYRO_OUTZ_L_G))
+        self.read_27h.clicked.connect(lambda: self.readRegister('27h', LSM6DS3_ACC_GYRO_OUTZ_H_G))
+        self.read_28h.clicked.connect(lambda: self.readRegister('28h', LSM6DS3_ACC_GYRO_OUTX_L_XL))
+        self.read_29h.clicked.connect(lambda: self.readRegister('29h', LSM6DS3_ACC_GYRO_OUTX_H_XL))
+        self.read_2Ah.clicked.connect(lambda: self.readRegister('2Ah', LSM6DS3_ACC_GYRO_OUTY_L_XL))
+        self.read_2Bh.clicked.connect(lambda: self.readRegister('2Bh', LSM6DS3_ACC_GYRO_OUTY_H_XL))
+        self.read_2Ch.clicked.connect(lambda: self.readRegister('2Ch', LSM6DS3_ACC_GYRO_OUTZ_L_XL))
+        self.read_2Dh.clicked.connect(lambda: self.readRegister('2Dh', LSM6DS3_ACC_GYRO_OUTZ_H_XL))
+
+        # read buttons page2
+        self.read_2Eh.clicked.connect(lambda: self.readRegister('2Eh', LSM6DS3_ACC_GYRO_SENSORHUB1_REG))
+        self.read_2Fh.clicked.connect(lambda: self.readRegister('2Fh', LSM6DS3_ACC_GYRO_SENSORHUB2_REG))
+        self.read_30h.clicked.connect(lambda: self.readRegister('30h', LSM6DS3_ACC_GYRO_SENSORHUB3_REG))
+        self.read_31h.clicked.connect(lambda: self.readRegister('31h', LSM6DS3_ACC_GYRO_SENSORHUB4_REG))
+        self.read_32h.clicked.connect(lambda: self.readRegister('32h', LSM6DS3_ACC_GYRO_SENSORHUB5_REG))
+        self.read_33h.clicked.connect(lambda: self.readRegister('33h', LSM6DS3_ACC_GYRO_SENSORHUB6_REG))
+        self.read_34h.clicked.connect(lambda: self.readRegister('34h', LSM6DS3_ACC_GYRO_SENSORHUB7_REG))
+        self.read_35h.clicked.connect(lambda: self.readRegister('35h', LSM6DS3_ACC_GYRO_SENSORHUB8_REG))
+        self.read_36h.clicked.connect(lambda: self.readRegister('36h', LSM6DS3_ACC_GYRO_SENSORHUB9_REG))
+        self.read_37h.clicked.connect(lambda: self.readRegister('37h', LSM6DS3_ACC_GYRO_SENSORHUB10_REG))
+        self.read_38h.clicked.connect(lambda: self.readRegister('38h', LSM6DS3_ACC_GYRO_SENSORHUB11_REG))
+        self.read_39h.clicked.connect(lambda: self.readRegister('39h', LSM6DS3_ACC_GYRO_SENSORHUB12_REG))
+        self.read_3Ah.clicked.connect(lambda: self.readRegister('3Ah', LSM6DS3_ACC_GYRO_FIFO_STATUS1))
+        self.read_3Bh.clicked.connect(lambda: self.readRegister('3Bh', LSM6DS3_ACC_GYRO_FIFO_STATUS2))
+        self.read_3Ch.clicked.connect(lambda: self.readRegister('3Ch', LSM6DS3_ACC_GYRO_FIFO_STATUS3))
+        self.read_3Dh.clicked.connect(lambda: self.readRegister('3Dh', LSM6DS3_ACC_GYRO_FIFO_STATUS4))
+        self.read_3Eh.clicked.connect(lambda: self.readRegister('3Eh', LSM6DS3_ACC_GYRO_FIFO_DATA_OUT_L))
+        self.read_3Fh.clicked.connect(lambda: self.readRegister('3Fh', LSM6DS3_ACC_GYRO_FIFO_DATA_OUT_H))
+        self.read_40h.clicked.connect(lambda: self.readRegister('40h', LSM6DS3_ACC_GYRO_TIMESTAMP0_REG))
+        self.read_41h.clicked.connect(lambda: self.readRegister('41h', LSM6DS3_ACC_GYRO_TIMESTAMP1_REG))
+        self.read_42h.clicked.connect(lambda: self.readRegister('42h', LSM6DS3_ACC_GYRO_TIMESTAMP2_REG))
+        self.read_49h.clicked.connect(lambda: self.readRegister('49h', 73))
+        self.read_4Ah.clicked.connect(lambda: self.readRegister('4Ah', 74))
+        self.read_4Bh.clicked.connect(lambda: self.readRegister('4Bh', LSM6DS3_ACC_GYRO_STEP_COUNTER_L))
+        self.read_4Ch.clicked.connect(lambda: self.readRegister('4Ch', LSM6DS3_ACC_GYRO_STEP_COUNTER_H))
+        self.read_4Dh.clicked.connect(lambda: self.readRegister('4Dh', 77))
+        self.read_4Eh.clicked.connect(lambda: self.readRegister('4Eh', 78))
+        self.read_4Fh.clicked.connect(lambda: self.readRegister('4Fh', 79))
+        self.read_50h.clicked.connect(lambda: self.readRegister('50h', 80))
+        self.read_51h.clicked.connect(lambda: self.readRegister('51h', 81))
+        self.read_52h.clicked.connect(lambda: self.readRegister('52h', 82))
+        self.read_53h.clicked.connect(lambda: self.readRegister('53h', LSM6DS3_ACC_GYRO_FUNC_SRC))
+        self.read_58h.clicked.connect(lambda: self.readRegister('58h', LSM6DS3_ACC_GYRO_TAP_CFG1))
+        self.read_59h.clicked.connect(lambda: self.readRegister('59h', LSM6DS3_ACC_GYRO_TAP_THS_6D))
+        self.read_5Ah.clicked.connect(lambda: self.readRegister('5Ah', 90))
+        self.read_5Bh.clicked.connect(lambda: self.readRegister('5Bh', LSM6DS3_ACC_GYRO_WAKE_UP_THS))
+        self.read_5Ch.clicked.connect(lambda: self.readRegister('5Ch', LSM6DS3_ACC_GYRO_WAKE_UP_DUR))
+        self.read_5Dh.clicked.connect(lambda: self.readRegister('5Dh', LSM6DS3_ACC_GYRO_FREE_FALL))
+
+        # read buttons page3
+        self.read_02h.clicked.connect(lambda: self.readRegister('02h', LSM6DS3_ACC_GYRO_SLV0_ADD))
+        self.read_03h.clicked.connect(lambda: self.readRegister('03h', LSM6DS3_ACC_GYRO_SLV0_SUBADD))
+        self.read_04h_2.clicked.connect(lambda: self.readRegister('04h_2', LSM6DS3_ACC_GYRO_SLAVE0_CONFIG))
+        self.read_05h_2h.clicke d.connect(lambda: self.readRegister('05h_2', LSM6DS3_ACC_GYRO_SLV1_ADD))
+        self.read_06h.clicked.connect(lambda: self.readRegister('06h', LSM6DS3_ACC_GYRO_SLV1_SUBADD))
+        self.read_07h_2.clicked.connect(lambda: self.readRegister('07h_2', LSM6DS3_ACC_GYRO_SLAVE1_CONFIG))
+        self.read_08h_2.clicked.connect(lambda: self.readRegister('08h_2', LSM6DS3_ACC_GYRO_SLV2_ADD))
+        self.read_09h_2.clicked.connect(lambda: self.readRegister('09h_2', LSM6DS3_ACC_GYRO_SLV2_SUBADD))
+        self.read_0Ah_2.clicked.connect(lambda: self.readRegister('0Ah_2', LSM6DS3_ACC_GYRO_SLAVE2_CONFIG))
+        self.read_0Bh_2.clicked.connect(lambda: self.readRegister('0Bh_2', LSM6DS3_ACC_GYRO_SLV3_ADD))
+        self.rea_0Ch.clicked.connect(lambda: self.readRegister('0Ch', LSM6DS3_ACC_GYRO_SLV3_SUBADD))
+        self.read_0Dh_2.clicked.connect(lambda: self.readRegister('0Dh_2', LSM6DS3_ACC_GYRO_SLAVE3_CONFIG))
+        self.read_0Eh_2.clicked.connect(lambda: self.readRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
+        self.read_13h_2.clicked.connect(lambda: self.readRegister('13h_2', LSM6DS3_ACC_GYRO_SM_STEP_THS))
+        self.read_15h_2.clicked.connect(lambda: self.readRegister('15h_2', 21))
+        self.read_24h_2.clicked.connect(lambda: self.readRegister('24h_2', LSM6DS3_ACC_GYRO_MAG_SI_XX))
+        self.read_25h_2.clicked.connect(lambda: self.readRegister('25h_2', LSM6DS3_ACC_GYRO_MAG_SI_XY))
+        self.read_26h_2.clicked.connect(lambda: self.readRegister('26h_2', LSM6DS3_ACC_GYRO_MAG_SI_XZ))
+        self.read_27h_2.clicked.connect(lambda: self.readRegister('27h_2', LSM6DS3_ACC_GYRO_MAG_SI_YX))
+        self.read_28h_2.clicked.connect(lambda: self.readRegister('28h_2', LSM6DS3_ACC_GYRO_MAG_SI_YY))
+        self.read_29h_2.clicked.connect(lambda: self.readRegister('29h_2', LSM6DS3_ACC_GYRO_MAG_SI_YZ))
+        self.read_2Ah_2.clicked.connect(lambda: self.readRegister('2Ah_2', LSM6DS3_ACC_GYRO_MAG_SI_ZX))
+        self.read_2Bh_2.clicked.connect(lambda: self.readRegister('2Bh_2', LSM6DS3_ACC_GYRO_MAG_SI_ZY))
+        self.read_2Ch_2.clicked.connect(lambda: self.readRegister('2Ch_2', LSM6DS3_ACC_GYRO_MAG_SI_ZZ))
+        self.read_2Dh_2.clicked.connect(lambda: self.readRegister('2Dh_2', LSM6DS3_ACC_GYRO_MAG_OFFX_L))
+        self.read_2Eh_2.clicked.connect(lambda: self.readRegister('2Eh_2', LSM6DS3_ACC_GYRO_MAG_OFFX_H))
+        self.read_2Fh_2.clicked.connect(lambda: self.readRegister('2Fh_2', LSM6DS3_ACC_GYRO_MAG_OFFY_L))
+        self.read_30h_2.clicked.connect(lambda: self.readRegister('30h_2', LSM6DS3_ACC_GYRO_MAG_OFFY_H))
+        self.read_31h_2.clicked.connect(lambda: self.readRegister('31h_2', LSM6DS3_ACC_GYRO_MAG_OFFZ_L))
+        self.read_32h_2.clicked.connect(lambda: self.readRegister('32h_2', LSM6DS3_ACC_GYRO_MAG_OFFZ_H))
+        self.read_5Eh.clicked.connect(lambda: self.readRegister('5Eh', LSM6DS3_ACC_GYRO_MD1_CFG))
+        self.read_5Fh.clicked.connect(lambda: self.readRegister('5Fh', LSM6DS3_ACC_GYRO_MD2_CFG))
+        self.read_66h.clicked.connect(lambda: self.readRegister('66h', 66))
+        self.read_67h.clicked.connect(lambda: self.readRegister('67h', 103))
+        self.read_68h.clicked.connect(lambda: self.readRegister('68h', 104))
+        self.read_69h.clicked.connect(lambda: self.readRegister('69h', 105))
+        self.read_6Ah.clicked.connect(lambda: self.readRegister('6Ah', 106))
+        self.read_6Bh.clicked.connect(lambda: self.readRegister('6Bh', 107))
+
 
         self.Tabs.setTabText(self.Tabs.indexOf(self.SensorSettingsTab),
                              _translate("MainWindow", "Sensor Settings", None))
