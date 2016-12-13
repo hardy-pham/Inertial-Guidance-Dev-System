@@ -4124,8 +4124,7 @@ class Ui_MainWindow(object):
             return
 
         # gyro and accel output to term
-        if (((self.LSM6DS3.logToTerminal == 1) or (self.LSM6DS3.logToFile == 1)) and (
-            self.LSM6DS3.gyroEnabled == 1) and (self.LSM6DS3.accelEnabled == 1)):
+        if(((self.LSM6DS3.logToTerminal == 1) or (self.LSM6DS3.logToFile == 1)) and (self.LSM6DS3.gyroEnabled == 1) and (self.LSM6DS3.accelEnabled == 1)):
             self.LSM6DS3.begin()
             self.LSM6DS3.printComboXYZ()
         # gyro output to term
@@ -4136,6 +4135,7 @@ class Ui_MainWindow(object):
         elif ((self.LSM6DS3.logToTerminal == 1 or self.LSM6DS3.logToFile == 1) and (self.LSM6DS3.accelEnabled == 1)):
             self.LSM6DS3.begin()
             self.LSM6DS3.printAccelXYZ()
+
 
     def stopSensor(self):
         if (self.LSM6DS3.printInProgress == 1):
@@ -4183,19 +4183,19 @@ class Ui_MainWindow(object):
 
     # writes the input to the designated register
     def writeRegister(self, address, registerAddress):
-        text = (eval('self.text_' + str(address) + '.text()'))
+        text = (eval('self.text_' + str(address) +'.text()'))
 
-        if (text):
+        if(text):
             text = int(text)
         else:
             return
-
+        
         decimal = int(str(text), 2)
-
+        
         self.LSM6DS3.bus.write_byte_data(self.LSM6DS3.address, registerAddress, decimal)
         print(str(text) + ' has been written to the designated register.')
         return
-
+    
     # reads the contents of the designated register
     def readRegister(self, translate, registerAddress):
 
@@ -4445,8 +4445,7 @@ class Ui_MainWindow(object):
         self.write_0Bh_2.clicked.connect(lambda: self.writeRegister('0Bh_2', LSM6DS3_ACC_GYRO_SLV3_ADD))
         self.rea_0Ch.clicked.connect(lambda: self.writeRegister('0Ch', LSM6DS3_ACC_GYRO_SLV3_SUBADD))
         self.write_0Dh_2.clicked.connect(lambda: self.writeRegister('0Dh_2', LSM6DS3_ACC_GYRO_SLAVE3_CONFIG))
-        self.write_0Eh_2.clicked.connect(
-            lambda: self.writeRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
+        self.write_0Eh_2.clicked.connect(lambda: self.writeRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
         self.write_13h_2.clicked.connect(lambda: self.writeRegister('13h_2', LSM6DS3_ACC_GYRO_SM_STEP_THS))
         self.write_15h_2.clicked.connect(lambda: self.writeRegister('15h_2', 21))
         self.write_24h_2.clicked.connect(lambda: self.writeRegister('24h_2', LSM6DS3_ACC_GYRO_MAG_SI_XX))
@@ -4569,8 +4568,7 @@ class Ui_MainWindow(object):
         self.read_0Bh_2.clicked.connect(lambda: self.readRegister('0Bh_2', LSM6DS3_ACC_GYRO_SLV3_ADD))
         self.rea_0Ch.clicked.connect(lambda: self.readRegister('0Ch', LSM6DS3_ACC_GYRO_SLV3_SUBADD))
         self.read_0Dh_2.clicked.connect(lambda: self.readRegister('0Dh_2', LSM6DS3_ACC_GYRO_SLAVE3_CONFIG))
-        self.read_0Eh_2.clicked.connect(
-            lambda: self.readRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
+        self.read_0Eh_2.clicked.connect(lambda: self.readRegister('0Eh_2', LSM6DS3_ACC_GYRO_DATAWRITE_SRC_MODE_SUB_SLV0))
         self.read_13h_2.clicked.connect(lambda: self.readRegister('13h_2', LSM6DS3_ACC_GYRO_SM_STEP_THS))
         self.read_15h_2.clicked.connect(lambda: self.readRegister('15h_2', 21))
         self.read_24h_2.clicked.connect(lambda: self.readRegister('24h_2', LSM6DS3_ACC_GYRO_MAG_SI_XX))
@@ -4596,6 +4594,7 @@ class Ui_MainWindow(object):
         self.read_69h.clicked.connect(lambda: self.readRegister('69h', 105))
         self.read_6Ah.clicked.connect(lambda: self.readRegister('6Ah', 106))
         self.read_6Bh.clicked.connect(lambda: self.readRegister('6Bh', 107))
+
 
         self.Tabs.setTabText(self.Tabs.indexOf(self.SensorSettingsTab),
                              _translate("MainWindow", "Sensor Settings", None))
