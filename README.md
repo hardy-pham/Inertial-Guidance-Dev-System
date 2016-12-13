@@ -37,10 +37,10 @@ Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 ## Usage
 1. Establish all necessary wire connections
     1. Connect Raspberry Pi with a monitor through the HDMI port
-    2.
+    2. ![alt tag](http://imgur.com/a/XofdL)
     3. Connect power to Raspberry Pi
     - Note: Be sure to connect the Raspberry Pi to the monitor first before powering it on to avoid resolution errors
 
 2. Download the system directory onto the Raspberry Pi
 3. Install necessary modules listed above.
-    - Note: Other modules such as time, csv, sys, etc., do not need to be downloaded as it comes loaded with python already
+    - Note: Other modules such as time, csv, sys, etc., do not need to be downloaded as it comes loaded with Python already
