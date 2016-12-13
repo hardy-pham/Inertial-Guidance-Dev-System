@@ -4,7 +4,7 @@ Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 - This system utilizes the IMU of the LSM6DS3 sensor, providing users with accurate 3-axis accelerometer and gyroscope readings
 - This system is meant to be used with a Raspberry Pi on a Linux operating system
 
-##### Hardware Components
+## Hardware Components
 - Raspberry Pi 3
 - LSM6DS3 sensor board
 
