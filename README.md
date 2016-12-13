@@ -37,8 +37,8 @@ Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 ## Usage
 1. Establish all necessary wire connections
     1. Connect Raspberry Pi with a monitor through the HDMI port
-    2. Connect the LSM6DS3 sensor with the Raspberry Pi using the follow connection outline:
-        - ![alt tag](http://i.imgur.com/7PjFGzD.png)
+    2. Connect the LSM6DS3 sensor with the Raspberry Pi using the follow connection guide:
+        - [Connection Guide](http://imgur.com/7PjFGzD))
     3. Connect power to Raspberry Pi
         - Note: Be sure to connect the Raspberry Pi to the monitor first before powering it on to avoid resolution errors
 
