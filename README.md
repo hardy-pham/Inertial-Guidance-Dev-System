@@ -37,10 +37,10 @@ Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
 ## Usage
 1. Establish all necessary wire connections
     1. Connect Raspberry Pi with a monitor through the HDMI port
-    2. Connect the LSM6DS3 sensor with the Raspberry Pi
+    2. Connect the LSM6DS3 sensor with the Raspberry Pi using the follow connection outline:
         - ![alt tag](http://i.imgur.com/7PjFGzD.png)
     3. Connect power to Raspberry Pi
-    - Note: Be sure to connect the Raspberry Pi to the monitor first before powering it on to avoid resolution errors
+        - Note: Be sure to connect the Raspberry Pi to the monitor first before powering it on to avoid resolution errors
 
 2. Download the repository onto the Raspberry Pi
     1. Open the terminal
@@ -48,7 +48,7 @@ Team: Mohamed Elamin, Ace Cordero, Ivan Arguello, Hardy Pham
     3. Run the following command:
         - git clone https://github.com/h6pham8/Inertial-Guidance-Dev-System.git
 
-3. Install necessary modules listed above
+3. Install necessary modules listed above in Module Requirements
     - Note: Other modules such as time, csv, sys, etc., do not need to be downloaded as it comes loaded with Python already
 
 4. Run the GUI
